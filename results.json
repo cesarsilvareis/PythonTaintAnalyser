@@ -1,0 +1,16 @@
+{
+  "v1": {
+    "warning_sinks": {
+      "open": {
+        "detected_sources": [
+          "x"
+        ],
+        "detected_sanitizers": {
+          "g": [
+            "y"
+          ]
+        }
+      }
+    }
+  }
+}
