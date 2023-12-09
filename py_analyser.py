@@ -41,6 +41,7 @@ def main():
                 sanitizers=raw["sanitizers"],
                 sinks=raw["sinks"]
         ), patterns_raw))
+        # TODO: parse 'implicit' element
     
     # Innovative XPTO Chat (v.0.01) -------------
     # Code should go here :D

@@ -6,27 +6,27 @@ class Vulnerabilities:
         # ...
         self.report = {}
 
-    def update_report(self, 
-                      vul_name: str, 
-                      sink: str, 
-                      detected_sources: str, 
-                      detected_sanitizers: dict[str, list[str]]):
+    # def update_report(self, 
+    #                   vul_name: str, 
+    #                   sink: str, 
+    #                   detected_sources: str, 
+    #                   detected_sanitizers: dict[str, list[str]]):
         
-        if vul_name not in self.report:
-            self.report[vul_name] = {
-                "warning_sinks": {
-                    sink: {
-                        "detected_sources": detected_sources,
-                        "detected_sanitizers": detected_sanitizers
-                    }
-                }
-            }
-            return
+    #     if vul_name not in self.report:
+    #         self.report[vul_name] = {
+    #             "warning_sinks": {
+    #                 sink: {
+    #                     "detected_sources": detected_sources,
+    #                     "detected_sanitizers": detected_sanitizers
+    #                 }
+    #             }
+    #         }
+    #         return
         
-        self.report[vul_name]["watning_sinks"][sink] = {
-            "detected_sources": detected_sources,
-            "detected_sanitizers": detected_sanitizers 
-        }
+    #     self.report[vul_name]["watning_sinks"][sink] = {
+    #         "detected_sources": detected_sources,
+    #         "detected_sanitizers": detected_sanitizers 
+    #     }
         
         
 
@@ -45,7 +45,7 @@ class Vulnerabilities:
                     for sanitizer in label.get_captured_sanitizers()
             }
 
-            self.update_report(vul_name, name, detected_sources, detected_sanitizers)
+            # TODO: self.update_report(vul_name, name, detected_sources, detected_sanitizers)
 
 
     def save(self, file_name: str = "results.json"):
