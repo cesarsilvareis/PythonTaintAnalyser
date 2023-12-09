@@ -1,5 +1,4 @@
-from multilabel import MultiLabel
-from policy import Policy
+from tool_resources import Policy, MultiLabel
 
 class Vulnerabilities:
     def __init__(self, policy: Policy):
@@ -36,7 +35,7 @@ class Vulnerabilities:
 
         for pattern in illegal_multilabel.get_patterns():
             label = illegal_multilabel.get_label_for_pattern(pattern)
-            assert label and label.is_illegal()
+            assert label and self.policy.is_illegal_label(label)
 
             vul_name = pattern.vul_name
             detected_sources = list(filter(

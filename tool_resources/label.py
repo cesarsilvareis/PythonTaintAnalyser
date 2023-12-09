@@ -42,14 +42,6 @@ class Label():
         sanitizers = self.get_captured_sanitizers_for_source(source)
         return len(sanitizers) > 0 
 
-    def is_illegal(self) -> bool:
-        for source in self.get_captured_sources():
-            if not self.is_sanitized_source(source):
-                return True
-        
-        return False
-            
-
     def capture_source(self, source: str): 
         # if self.is_recognized_source(source): return # TODO check this
 

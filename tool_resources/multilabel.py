@@ -1,5 +1,4 @@
-from pattern import Pattern
-from label import Label
+from tool_resources import Pattern, Label
 
 # Maps (vulnerability) Patterns to Labels (unique for variable)
 class MultiLabel:
@@ -144,7 +143,7 @@ class MultiLabelling:
         return comb
     
     def __str__(self) -> str:
-        return f"lbling{self.var_labels}"
+        return f"lbling:{self.var_labels}"
 
     def __repr__(self) -> str:
         return str(self)

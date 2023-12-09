@@ -1,5 +1,4 @@
-from pattern import Pattern
-from multilabel import MultiLabel
+from tool_resources import Pattern, MultiLabel, Label
 
 class Policy:
     def __init__(self, patterns: list[Pattern]|Pattern):
@@ -41,10 +40,18 @@ class Policy:
         
         for pattern in considered_patterns:
             label = multilabel.get_label_for_pattern(pattern)
-            if not label.is_illegal(): continue
+            if not self.is_illegal_label(label): continue
 
             illegal_multilabel.add_pattern(pattern)
             # keep label as the illegal label
             illegal_multilabel.set_label_for_pattern(pattern, label)
         
         return illegal_multilabel
+    
+    @staticmethod
+    def is_illegal_label(label: Label) -> bool:
+        for source in label.get_captured_sources():
+            if not label.is_sanitized_source(source):
+                return True
+        
+        return False

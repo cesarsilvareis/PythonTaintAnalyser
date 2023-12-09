@@ -1,12 +1,18 @@
+#!/usr/bin/python3
+import os, sys
 import argparse
 import ast
 import astexport.export as astexport
 import json
 
-from pattern import Pattern
-from multilabel import MultiLabelling
-from policy import Policy
-from report import Vulnerabilities
+from tool_resources import *
+
+
+def check_file(filename: str):
+    if not os.path.isfile(filename):
+        print(f"[ERROR] Program file '{filename}' couldn't be open as it doesn't exist :(", file=sys.stderr)
+        sys.exit(1)
+
 
 def main():
     parser = argparse.ArgumentParser(description='Tool for analyzing program slices')
@@ -18,24 +24,40 @@ def main():
     print(f"Program file: {args.program_file}")
     print(f"Vulnerability patterns file: {args.vulnerability_patterns_file}")
     
+    check_file(args.program_file)
+    check_file(args.vulnerability_patterns_file)
+
     with open(args.program_file, 'r') as f:
         program = f.read()
     tree = ast.parse(program)
     ast_json = astexport.export_dict(tree)
     
     with open(args.vulnerability_patterns_file, 'r') as f:
-        patterns = json.load(f)
+        patterns_raw = json.load(f)
+        patterns = list(map(lambda raw:
+            Pattern(
+                vul_name=raw["vulnerability"],
+                sources=raw["sources"],
+                sanitizers=raw["sanitizers"],
+                sinks=raw["sinks"]
+        ), patterns_raw))
     
+    # Innovative XPTO Chat (v.0.01) -------------
     # Code should go here :D
     # Não tive mais tempo, tive que sair lol :(
+    # Na boa!
+    # >
     
+    print(f"[PROGRAM]\n{program}")
+    print("----------------------------------------")
+    print(f"[PROGRAM_AST]\n{ast_json}")
+    print("----------------------------------------")
+    print(f"[PATTERNS_RAW]\n{patterns_raw}")
+    print("----------------------------------------")
+    print(f"[PATTERNS]\n{patterns}")
+    print("----------------------------------------")
 
-    
-    print(program)
-    print("----------------------------------------")
-    print(ast_json)
-    print("----------------------------------------")
-    print(patterns)
-        
+
+
 if __name__ == '__main__':
     main()

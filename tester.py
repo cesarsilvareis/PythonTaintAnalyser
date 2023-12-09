@@ -1,8 +1,6 @@
 #!/usr/bin/python3
-from pattern import Pattern
-from multilabel import MultiLabelling
-from policy import Policy
-from report import Vulnerabilities
+
+from tool_resources import *
 
 if __name__ == "__main__":
     variables = ["x", "y", "z", "w"]
