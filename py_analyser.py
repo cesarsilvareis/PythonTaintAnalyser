@@ -108,8 +108,22 @@ def traverse_statement(node, policy, multilabelling, vulnerabilities) -> MultiLa
             
             return resulted_multilabelling
         
-        case "If":
-            #print(node_info)
+        case "If":            
+            test = node.get('test') # implicit flows detected with this: TODO
+            body = node.get('body')
+            orelse = node.get('orelse')
+            
+            assert len(body) == 1
+            assert len(orelse) == 1
+            
+            for ins in body:
+                multilabelling = traverse_statement(ins, policy, multilabelling, vulnerabilities)
+                resulted_multilabelling.combine(multilabelling)
+                
+            for ins in orelse:
+                multilabelling = traverse_statement(ins, policy, multilabelling, vulnerabilities)
+                resulted_multilabelling.combine(multilabelling)
+                
             #print(len(ast_info_list))
             #for info in ast_info_list:
             #    info.append(node_info)
@@ -136,9 +150,19 @@ def traverse_statement(node, policy, multilabelling, vulnerabilities) -> MultiLa
             # for l in temporary:
             #     for info in l:
             #         ast_info_list.append(info)
-            pass
+            return resulted_multilabelling
                     
         case "While":
+                        
+            test = node.get('test') # implicit flows detected with this: TODO
+            
+            body = node.get('body')
+            
+            for ins in body:
+                multilabelling = traverse_statement(ins, policy, multilabelling, vulnerabilities)
+                resulted_multilabelling.combine(multilabelling)
+            
+
             # global CURRENT_LOOP
                         
             # new_info_list = []
@@ -160,9 +184,11 @@ def traverse_statement(node, policy, multilabelling, vulnerabilities) -> MultiLa
             
             #     ast_info_list.append(new_info_list)
             #     CURRENT_LOOP = 0
-            pass
+            
+            
+            return multilabelling
     
-    return None
+    return multilabelling
 
 def traverse_ast_trace(node, ast_info_list, patterns):
     if node is None: return []
@@ -198,6 +224,15 @@ def main():
         
     program = """
 b = c()
+
+if b == 5:
+    a = 1
+else:
+    a = 2
+
+while a == 1:
+    c = 3
+
 """
 
     tree = ast.parse(program)
