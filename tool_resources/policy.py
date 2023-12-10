@@ -1,9 +1,7 @@
 from tool_resources import Pattern, MultiLabel, Label
 
 class Policy:
-    def __init__(self, patterns: list[Pattern]|Pattern):
-        if isinstance(patterns, Pattern):
-            patterns = [patterns]
+    def __init__(self, patterns: list[Pattern]):
 
         self.patterns = patterns
 
@@ -20,7 +18,6 @@ class Policy:
     def get_patterns_with_sink(self, sink: str) -> list[Pattern]:
         return list(filter(lambda p: p.is_sink(sink), self.patterns))
 
-
     def get_vul_names(self) -> list[str]:
         return list(map(lambda p: p.get_vul_name(), self.patterns))
     
@@ -32,7 +29,6 @@ class Policy:
     
     def get_vul_name_for_sink(self, sink: str)-> list[str]:
         return list(map(lambda p: p.get_vul_name(), self.get_patterns_with_sink(sink)))
-    
 
     def get_illegal_flows(self, name: str, multilabel: MultiLabel) -> MultiLabel:
         considered_patterns = self.get_patterns_with_sink(name)

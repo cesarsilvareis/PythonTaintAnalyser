@@ -78,11 +78,14 @@ class Label():
                 resulted_sanitizers = my_sanitizers
             elif other_sanitizers:
                 resulted_sanitizers = other_sanitizers
-
+            
+            
+            #Add source even if it has no sanitizers
             if not resulted_sanitizers:
                 comb.capture_source(source)
                 continue
-
+            
+            #Add all sanitizers for source
             for san in resulted_sanitizers:
                 comb.capture_sanitizer(san, source)
 

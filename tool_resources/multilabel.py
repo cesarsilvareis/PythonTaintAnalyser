@@ -64,7 +64,7 @@ class MultiLabel:
         label.capture_sanitizer(sanitizer, filtered_sources)
 
     def combine(self, other: 'MultiLabel') -> 'MultiLabel':
-        recognized_patterns = list(set(self.get_patterns() + other.get_patterns()))
+        recognized_patterns = list(set(self.get_patterns() + other.get_patterns())) # union of patterns
         comb = MultiLabel()
 
         for pattern in recognized_patterns:
@@ -93,37 +93,41 @@ class MultiLabel:
 
 # Maps variable names to MultiLabels
 class MultiLabelling:
-    def __init__(self, variables: list[str]| str):
-        if isinstance(variables, str):
-            variables = [variables]
-
-        self.var_labels = {
-            var: MultiLabel() for var in variables
-        }
+    def __init__(self):
+        self.var_labels = {}
 
     def get_variables(self) -> list[str]:
         return list(self.var_labels.keys())
 
     def get_multilabel_for_var(self, variable: str) -> MultiLabel:
-        if not self.is_recognized_variable(variable): return None
+        if not self.is_recognized_variable(variable):
+            self.add_variable(variable)
 
         return self.var_labels[variable]
     
-    def set_multilabel_for_var(self, variable: str, new_multilabel: MultiLabel):
+    def update_multilabel_for_var(self, variable: str, new_multilabel: MultiLabel):
         if not self.is_recognized_variable(variable): return
 
-        self.var_labels[variable] = new_multilabel
+        self.var_labels[variable] = self.var_labels[variable].combine(new_multilabel)
 
     def is_recognized_variable(self, variable: str) -> bool:
         return variable in self.var_labels
     
+    def add_variable(self, variable):
+        if self.is_recognized_variable(variable): return
+
+        self.var_labels[variable] = MultiLabel()
+
     def copy(self) -> 'MultiLabelling':
         from copy import deepcopy
         return deepcopy(self)
     
     def combine(self, other: 'MultiLabelling') -> 'MultiLabelling':
-        variables = list(set(self.get_variables() + other.get_variables()))
-        comb = MultiLabelling(variables)
+        if not other: return self.copy()
+        
+        comb = MultiLabelling()
+
+        variables = list(set(self.get_variables() + other.get_variables())) # union
 
         for var in variables:
             my_multilabel = self.get_multilabel_for_var(var)
@@ -138,7 +142,8 @@ class MultiLabelling:
                 assert other_multilabel # just to be sure
                 resulted_multilabel = other_multilabel
 
-            comb.set_multilabel_for_var(var, resulted_multilabel)
+            comb.add_variable(var)  # var is assigned to a empty Multilabel
+            comb.update_multilabel_for_var(var, resulted_multilabel)
 
         return comb
     
