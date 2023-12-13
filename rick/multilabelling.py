@@ -33,7 +33,6 @@ class MultiLabelling:
         
         return new_multilabelling
     
-    
     def __repr__(self) -> str:
         return str(self)
     

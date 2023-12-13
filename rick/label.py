@@ -2,9 +2,9 @@
 # Captures the sources that might have influenced a certain piece of information
 # and the sanitizers that might have intercepted this information since its flow from each source
 class Label:
-    def __init__(self, sources=set(), sanitizers=set()):
-        self.sources = sources
-        self.sanitizers = sanitizers
+    def __init__(self):
+        self.sources = set()
+        self.sanitizers = set()
     
     def get_sources(self):
         return self.sources
@@ -28,4 +28,4 @@ class Label:
         return str(self)
     
     def __str__(self) -> str:
-        return f"{{src:{self.sources}; san:{self.sanitizers}}}"
+        return f"{{sources: {self.sources}; sanitizers: {self.sanitizers}}}"

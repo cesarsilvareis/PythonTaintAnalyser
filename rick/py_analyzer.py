@@ -51,7 +51,7 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
                     multiLabel.add_source(pattern_name, node.get('id'))
             return multiLabel
         case "BinOp" | "BoolOp":
-            # ast_type: BinOp
+            # ast_type: BinOp | BoolOp
             # left: node (expression)
             # op: (ast_type: operator)
             # right: node (expression)
@@ -83,15 +83,22 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
                 argMultiLabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
                 vulnerabilities.record_ilflows(function_name, policy.filter_ilflows(function_name, argMultiLabel))
                 #multiLabel = multiLabel.combine(argMultiLabel)
+            print('\n')
             print("AQUI1", multilabelling)
             multiLabel = MultiLabel(policy.get_patterns())
+            print(multiLabel)
             for pattern in policy.get_patterns():
                 if pattern.has_source(function_name):
+                    print(f"Multilabeling before add: {multilabelling}")
+                    print(f"Adding source: ${function_name}$ to multiLabel ${multiLabel}$")
                     multiLabel.add_source(pattern.get_name(), function_name)
+                    print(f"Multilabeling after add: {multilabelling}")
                 if pattern.has_sanitizer(function_name):
                     multiLabel.add_sanitizer(pattern.get_name(), function_name)
                     
             print("AQUI2", multilabelling)
+            print(multiLabel)
+            print('\n')
             return multiLabel            
         case "Expr":
             # ast_type: Expr
@@ -151,6 +158,7 @@ def traverse_ast_trace(node, patterns):
     return multilabelling
         
 def main():
+    
     parser = argparse.ArgumentParser(description='Tool for analyzing program slices')
     parser.add_argument('program_file', type=str, help='Name of the Python file containing the program slice to analyze')
     parser.add_argument('vulnerability_patterns_file', type=str, help='Name of the JSON file containing the list of vulnerability patterns to consider')
@@ -186,12 +194,12 @@ b = c(a)
                 sanitizers=raw["sanitizers"],
                 sinks=raw["sinks"]
         ), patterns_raw))
-        # TODO: parse 'implicit' element
+        # TODO: parse 'implicit'element
     
     # Innovative XPTO Chat (v.0.01) -------------
     # Code should go here :D
     # Não tive mais tempo, tive que sair lol :(
-    # Na boa!
+    # Na boa! 
     # >
     
 
