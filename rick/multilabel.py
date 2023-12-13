@@ -20,7 +20,7 @@ class MultiLabel:
         if self.mapping.get(pattern_name) is None: return
         if self.get_pattern(pattern_name).has_source(source):
             self.get_label(pattern_name).add_source(source)
-
+            
     def add_sanitizer(self, pattern_name, sanitizer):
         if self.mapping.get(pattern_name) is None: return
         if self.get_pattern(pattern_name).has_sanitizer(sanitizer):
@@ -42,3 +42,10 @@ class MultiLabel:
             for sanitizer in combinedLabel.get_sanitizers():
                 newMultiLabel.get_label(pattern_name).add_sanitizer(sanitizer)
         return newMultiLabel
+    
+    
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return str(self.mapping)

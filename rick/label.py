@@ -23,3 +23,9 @@ class Label:
         ) if label is not None \
         else Label(sources = self.sources.copy(), sanitizers=self.sanitizers.copy())
 
+
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return f"{{src:{self.sources}; san:{self.sanitizers}}}"

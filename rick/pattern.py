@@ -22,3 +22,12 @@ class Pattern:
         return sanitizer in self.sanitizers
     def has_sink(self, sink):
         return sink in self.sinks
+    
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return f"{{name:{self.name};" +\
+               f"src:{self.sources};" +\
+               f"san:{self.sanitizers};" +\
+               f"sin:{self.sinks}}}"
