@@ -6,12 +6,16 @@ class Policy:
     
     def get_patterns(self):
         return self.patterns
+    
     def get_pattern_names(self):
         return [pattern.get_name() for pattern in self.patterns]
+    
     def get_patterns_with_source(self, source):
         return [pattern for pattern in self.patterns if pattern.has_source(source)]
+    
     def get_patterns_with_sanitizer(self, sanitizer):
         return [pattern for pattern in self.patterns if pattern.has_sanitizer(sanitizer)]
+        
     def get_patterns_with_sink(self, sink):
         return [pattern for pattern in self.patterns if pattern.has_sink(sink)]
     
