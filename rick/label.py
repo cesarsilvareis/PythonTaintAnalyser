@@ -17,11 +17,21 @@ class Label:
         self.sanitizers.add(sanitizer)
     
     def combine(self, label):
-        return Label(\
-            sources = self.sources.union(label.get_sources()), \
-            sanitizers = self.sanitizers.union(label.get_sanitizers()) \
-        ) if label is not None \
-        else Label(sources = self.sources.copy(), sanitizers=self.sanitizers.copy())
+        
+        newLabel = Label()
+        
+        if label is not None:
+            for source in label.get_sources():
+                newLabel.add_source(source)
+            for sanitizer in label.get_sanitizers():  
+                newLabel.add_sanitizer(sanitizer)            
+        
+        for source in self.sources:
+            newLabel.add_source(source)
+        for sanitizer in self.sanitizers:
+            newLabel.add_sanitizer(sanitizer)
+            
+        return newLabel
 
 
     def __repr__(self) -> str:

@@ -78,27 +78,23 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             # keywords: ?
             function_name = node.get('func').get('id')
 
+            multiLabel = MultiLabel(policy.get_patterns())
+
             for arg in node.get('args'):
                 # Get the multilabel of each argument fed to the function and check if there are illegal flows
                 argMultiLabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
                 vulnerabilities.record_ilflows(function_name, policy.filter_ilflows(function_name, argMultiLabel))
-                #multiLabel = multiLabel.combine(argMultiLabel)
-            print('\n')
-            print("AQUI1", multilabelling)
-            multiLabel = MultiLabel(policy.get_patterns())
-            print(multiLabel)
+                print(argMultiLabel)
+                print(multiLabel)
+                multiLabel = multiLabel.combine(argMultiLabel)
+            
             for pattern in policy.get_patterns():
                 if pattern.has_source(function_name):
-                    print(f"Multilabeling before add: {multilabelling}")
-                    print(f"Adding source: ${function_name}$ to multiLabel ${multiLabel}$")
                     multiLabel.add_source(pattern.get_name(), function_name)
-                    print(f"Multilabeling after add: {multilabelling}")
                 if pattern.has_sanitizer(function_name):
                     multiLabel.add_sanitizer(pattern.get_name(), function_name)
+                    #clean sources? TODO Se passou num sanitizer ent as sources antes ja n importam e podemso limpar para n detetar como vulnerabilidade (visto que nao guardamos timestamps ou ordem)
                     
-            print("AQUI2", multilabelling)
-            print(multiLabel)
-            print('\n')
             return multiLabel            
         case "Expr":
             # ast_type: Expr
@@ -120,13 +116,7 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
             left_type = left.get('ast_type')
             
             right = node.get('value')
-            print("before:",multilabelling)            
             multi_label_right = traverse_ast_expr(right, policy, multilabelling, vulnerabilities)
-            print("after:",multilabelling)            
-
-            #print(id(multi_label_right.get_mapping()))
-
-            #print(multilabelling)
 
             
             if left_type == "Name":
@@ -134,6 +124,9 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
                 multilabelling.set_multilabel(variable_name, multi_label_right)
             else:
                 raise ValueError(f"Unsupported left type: {left_type}") #Maybe we need to add support for tuples latter
+        
+        case "If":
+            print(node)
             
         case default:
             print(ast_type)
@@ -175,8 +168,11 @@ def main():
         program = f.read()
         
     program = """
-a = 5
-b = c(a)
+a = c()
+b = d(a)
+
+if a == 5:
+    d = a
 
 """
 
