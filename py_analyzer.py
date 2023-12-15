@@ -82,8 +82,6 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
                 # Get the multilabel of each argument fed to the function and check if there are illegal flows
                 argMultiLabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, argMultiLabel))
-                print(argMultiLabel)
-                print(multiLabel)
                 #multiLabel = multiLabel.combine(argMultiLabel)
             
             func = (function_name, node.get('lineno'))
@@ -105,11 +103,12 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
     if node is None: return multilabelling
     
     ast_type = node.get('ast_type')
-    print("Parsing: ",ast_type)
+    print("Parsing (stmt): ",ast_type)
     match ast_type:
         case "Module":
             for stmt in node.get('body'):
                 multilabelling = traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities)
+
         case "Assign":
             assert len(node.get('targets')) == 1 # No multiple assignments in our WHILE language
             target_var = node.get('targets')[0]
@@ -149,7 +148,7 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
 
             
         case default:
-            print(ast_type)
+            traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
     
     return multilabelling
 
@@ -167,6 +166,7 @@ def traverse_ast_trace(node, patterns):
     multilabelling = traverse_ast_stmt(node, policy, multilabelling, vulnerabilities)    
     
     print(multilabelling)
+    print("vuln", vulnerabilities)
         
     return multilabelling
         
@@ -200,7 +200,11 @@ while a == 1:
        w = y
        y = f
 
+d(a)
 """
+
+
+
 
     tree = ast.parse(program)
     ast_json = astexport.export_dict(tree)

@@ -24,8 +24,10 @@ class Policy:
         # Returns a multilabel representing the illegal flows:
         # -> Has a pattern for which the function_name is a sink
         # -> Has atleast one source on the label corresponding to that pattern
-        multiLabel = MultiLabel(self.patterns)
+        #multiLabel = MultiLabel(self.patterns)
+        new_multilabel = MultiLabel(self.patterns)
         for pattern in self.get_patterns_with_sink(function_name):
             if len(multiLabel.get_label(pattern.get_name()).get_sources()) > 0:
-                multiLabel = multiLabel.combine(MultiLabel(pattern))
-        return multiLabel
+                new_multilabel = new_multilabel.combine(MultiLabel([pattern,]))
+                new_multilabel.add_label(pattern.get_name(), multiLabel.get_label(pattern.get_name()))
+        return new_multilabel

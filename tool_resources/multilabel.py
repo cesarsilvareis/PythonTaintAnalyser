@@ -16,6 +16,10 @@ class MultiLabel:
     def get_mapping(self):
         return self.mapping
     
+    def add_label(self, pattern_name, label):
+        if self.mapping.get(pattern_name) is None: return
+        self.get_entry(pattern_name)['label'] = label
+    
     def add_source(self, pattern_name, source):
         if self.mapping.get(pattern_name) is None: return
         if self.get_pattern(pattern_name).has_source(source):

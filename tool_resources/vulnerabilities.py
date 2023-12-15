@@ -17,6 +17,18 @@ class Vulnerability:
                 "sanitized_flows": {self.sanitizers}
                 '''
         # Add lineno to sink and source : (instruction, lineno)
+        
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return f'''
+                vulnerability: {self.name},
+                "source": {self.source},
+                "sink": {self.sink},
+                "unsanitized_flows": {self.hasUnsanitizedFlows()},
+                "sanitized_flows": {self.sanitizers}
+                '''
 
 class Vulnerabilities:
     def __init__(self, vulnerabilities):
@@ -26,3 +38,10 @@ class Vulnerabilities:
         for pattern_name in multiLabel.get_mapping():
             for source in multiLabel.get_label(pattern_name).get_sources():
                 self.mapping[pattern_name].append(Vulnerability(pattern_name, source, sink, multiLabel.get_label(pattern_name).get_sanitizers()))
+                
+                
+    def __repr__(self) -> str:
+        return str(self)
+    
+    def __str__(self) -> str:
+        return str(self.mapping)
