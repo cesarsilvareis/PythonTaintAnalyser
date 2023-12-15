@@ -32,7 +32,7 @@ class Vulnerabilities:
         for pattern_name in multiLabel.get_mapping():
             for source in multiLabel.get_label(pattern_name).get_sources():
                 self.mapping[pattern_name].append(Vulnerability(
-                    pattern_name + "_" + str(len(self.mapping[pattern_name]) + 1), source, sink, 
+                    f"{pattern_name}_{len(self.mapping[pattern_name])+1}", source, sink, 
                     multiLabel.get_label(pattern_name).get_sanitizers()
                 ))       
                 

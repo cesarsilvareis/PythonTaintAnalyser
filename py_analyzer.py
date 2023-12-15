@@ -98,6 +98,19 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             return traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities)
 
 
+
+def count_assigns(body_nodes):
+    if len(body_nodes) == 0: return 0
+    node = body_nodes[0] # Head of list -> Statement / Expression
+    if node.get('ast_type') == "Assign":
+        return 1 + count_assigns(body_nodes[1:])
+    elif node.get('ast_type') == "While":
+        return count_assigns(node.get('body'))
+    elif node.get('ast_type') == "If":
+        return count_assigns(node.get('body')) + (0 if node.get('orelse') is None else count_assigns(node.get('orelse')))
+    return count_assigns(body_nodes[1:])
+
+
 def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
     
     if node is None: return multilabelling
@@ -121,32 +134,24 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
         case "If":
             teste = node.get('test') # TODO: Implicit vulnerabilities
             
-            body = node.get('body')
-            
-            for stmt in body:
+            for stmt in node.get('body'):
                 multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
             
             orelse = node.get('orelse')
-            
             if orelse is not None:
                 for stmt in orelse:
-                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))            
+                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+
         case "While":
             body = node.get('body')
             test = node.get('test')
-            
             #option 1: enter body
-            
-            while_assigns = len(body)
-            
-            while while_assigns > 0:
+            while_runs_x_times = 1+count_assigns(body)
+            print(f"\n @  WHILE RUNS {while_runs_x_times} times!!! @\n ")
+            for _ in range(while_runs_x_times):
                 for stmt in body:
                     multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
-                while_assigns -= 1
-            
-            #print(json.dumps(node, indent=4))
 
-            
         case default:
             traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
     
@@ -197,9 +202,9 @@ while a == 1:
     f = b
     b = a
     while a == 1:
-       w = y
-       y = f
-
+        if a == 1:
+            w = y
+            y = f
 d(a)
 """
 
