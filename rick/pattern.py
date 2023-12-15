@@ -17,9 +17,11 @@ class Pattern:
         return self.sinks
 
     def has_source(self, source):
-        return source in self.sources
+        # Source is a tuple (source_name, lineno)
+        return source[0] in self.sources
     def has_sanitizer(self, sanitizer):
-        return sanitizer in self.sanitizers
+        # Sanitizer is a tuple (sanitizer_name, lineno)
+        return sanitizer[0] in self.sanitizers
     def has_sink(self, sink):
         return sink in self.sinks
     
@@ -27,7 +29,7 @@ class Pattern:
         return str(self)
     
     def __str__(self) -> str:
-        return f"{{name:{self.name};" +\
-               f"src:{self.sources};" +\
-               f"san:{self.sanitizers};" +\
-               f"sin:{self.sinks}}}"
+        return f"{{pattern_name: {self.name};" +\
+               f"sources: {self.sources};" +\
+               f"sanitizers: {self.sanitizers};" +\
+               f"sinks: {self.sinks}}}"

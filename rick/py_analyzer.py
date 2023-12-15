@@ -48,7 +48,7 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
                 for pattern_name in multiLabel.get_mapping(): 
-                    multiLabel.add_source(pattern_name, node.get('id'))
+                    multiLabel.add_source(pattern_name, (node.get('id'), node.get('lineno')))
             return multiLabel
         case "BinOp" | "BoolOp":
             # ast_type: BinOp | BoolOp
@@ -83,17 +83,16 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             for arg in node.get('args'):
                 # Get the multilabel of each argument fed to the function and check if there are illegal flows
                 argMultiLabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
-                vulnerabilities.record_ilflows(function_name, policy.filter_ilflows(function_name, argMultiLabel))
+                vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, argMultiLabel))
                 print(argMultiLabel)
                 print(multiLabel)
-                multiLabel = multiLabel.combine(argMultiLabel)
+                #multiLabel = multiLabel.combine(argMultiLabel)
             
-            for pattern in policy.get_patterns():
-                if pattern.has_source(function_name):
-                    multiLabel.add_source(pattern.get_name(), function_name)
-                if pattern.has_sanitizer(function_name):
-                    multiLabel.add_sanitizer(pattern.get_name(), function_name)
-                    #clean sources? TODO Se passou num sanitizer ent as sources antes ja n importam e podemso limpar para n detetar como vulnerabilidade (visto que nao guardamos timestamps ou ordem)
+            for pattern in policy.get_patterns_with_source():
+                multiLabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
+            for pattern in policy.get_patterns_with_sanitizer():
+                multiLabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno')))
+                #clean sources? TODO Se passou num sanitizer ent as sources antes ja n importam e podemso limpar para n detetar como vulnerabilidade (visto que nao guardamos timestamps ou ordem)
                     
             return multiLabel            
         case "Expr":
