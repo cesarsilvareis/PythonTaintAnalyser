@@ -10,7 +10,7 @@ class Vulnerability:
 
     def formatVulnerability(self):
         return f'''
-                vulnerability: {self.name},
+                "vulnerability": {self.name},
                 "source": {self.source},
                 "sink": {self.sink},
                 "unsanitized_flows": {self.hasUnsanitizedFlows()},
@@ -22,13 +22,7 @@ class Vulnerability:
         return str(self)
     
     def __str__(self) -> str:
-        return f'''
-                vulnerability: {self.name},
-                "source": {self.source},
-                "sink": {self.sink},
-                "unsanitized_flows": {self.hasUnsanitizedFlows()},
-                "sanitized_flows": {self.sanitizers}
-                '''
+        return self.formatVulnerability()
 
 class Vulnerabilities:
     def __init__(self, vulnerabilities):
@@ -37,8 +31,10 @@ class Vulnerabilities:
     def record_ilflows(self, sink, multiLabel):
         for pattern_name in multiLabel.get_mapping():
             for source in multiLabel.get_label(pattern_name).get_sources():
-                self.mapping[pattern_name].append(Vulnerability(pattern_name, source, sink, multiLabel.get_label(pattern_name).get_sanitizers()))
-                
+                self.mapping[pattern_name].append(Vulnerability(
+                    pattern_name + "_" + str(len(self.mapping[pattern_name]) + 1), source, sink, 
+                    multiLabel.get_label(pattern_name).get_sanitizers()
+                ))       
                 
     def __repr__(self) -> str:
         return str(self)
