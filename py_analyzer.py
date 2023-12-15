@@ -120,7 +120,7 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
                 raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter
         
         case "If":
-            teste = node.get('test') #Implicit vulnerabilities
+            teste = node.get('test') # TODO: Implicit vulnerabilities
             
             body = node.get('body')
             
