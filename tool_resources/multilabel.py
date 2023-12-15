@@ -1,4 +1,4 @@
-from label import Label
+from tool_resources import Label
 
 class MultiLabel:
     def __init__(self, patterns):

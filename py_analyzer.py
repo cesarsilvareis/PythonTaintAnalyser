@@ -4,11 +4,7 @@ import ast
 import json
 import astexport.export as astexport
 import sys
-from multilabel import MultiLabel
-from policy import Policy
-from pattern import Pattern
-from vulnerabilities import Vulnerabilities
-from multilabelling import MultiLabelling
+from tool_resources import *
 import argparse
 import os
 
@@ -31,6 +27,8 @@ def formatTrace(trace):
 def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
     # Expressions are assigned the least upper bound to the variables that are read
     # In this case the least upper bound of the multilabels that compose the resulting expression multilabel
+    
+    if node is None: return MultiLabel(policy.get_patterns())
     
     ast_type = node.get('ast_type')
     print("Parsing: ",ast_type)
@@ -88,10 +86,11 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
                 print(multiLabel)
                 #multiLabel = multiLabel.combine(argMultiLabel)
             
-            for pattern in policy.get_patterns_with_source():
-                multiLabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
-            for pattern in policy.get_patterns_with_sanitizer():
-                multiLabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno')))
+            func = (function_name, node.get('lineno'))
+            for pattern in policy.get_patterns_with_source(func):
+                multiLabel.add_source(pattern.get_name(), func)
+            for pattern in policy.get_patterns_with_sanitizer(func):
+                multiLabel.add_sanitizer(pattern.get_name(), func)
                 #clean sources? TODO Se passou num sanitizer ent as sources antes ja n importam e podemso limpar para n detetar como vulnerabilidade (visto que nao guardamos timestamps ou ordem)
                     
             return multiLabel            
@@ -100,7 +99,11 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             # value: node (expression)
             return traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities)
 
+
 def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
+    
+    if node is None: return multilabelling
+    
     ast_type = node.get('ast_type')
     print("Parsing: ",ast_type)
     match ast_type:
@@ -108,24 +111,42 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
             for stmt in node.get('body'):
                 multilabelling = traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities)
         case "Assign":
-            #print(json.dumps(node, indent=4))
-            assert len(node.get('targets')) == 1
-
-            left = node.get('targets')[0]
-            left_type = left.get('ast_type')
-            
-            right = node.get('value')
-            multi_label_right = traverse_ast_expr(right, policy, multilabelling, vulnerabilities)
-
-            
-            if left_type == "Name":
-                variable_name = left.get('id')
-                multilabelling.set_multilabel(variable_name, multi_label_right)
+            assert len(node.get('targets')) == 1 # No multiple assignments in our WHILE language
+            target_var = node.get('targets')[0]
+            if target_var.get('ast_type') == "Name":
+                variable_name = target_var.get('id')
+                multilabelling.set_multilabel(variable_name, traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities))
             else:
-                raise ValueError(f"Unsupported left type: {left_type}") #Maybe we need to add support for tuples latter
+                raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter
         
         case "If":
-            print(node)
+            teste = node.get('test') #Implicit vulnerabilities
+            
+            body = node.get('body')
+            
+            for stmt in body:
+                multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+            
+            orelse = node.get('orelse')
+            
+            if orelse is not None:
+                for stmt in orelse:
+                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))            
+        case "While":
+            body = node.get('body')
+            test = node.get('test')
+            
+            #option 1: enter body
+            
+            while_assigns = len(body)
+            
+            while while_assigns > 0:
+                for stmt in body:
+                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+                while_assigns -= 1
+            
+            #print(json.dumps(node, indent=4))
+
             
         case default:
             print(ast_type)
@@ -168,10 +189,16 @@ def main():
         
     program = """
 a = c()
-b = d(a)
-
-if a == 5:
-    d = a
+z = c()
+f = 0
+b = 0
+y = 0
+while a == 1:
+    f = b
+    b = a
+    while a == 1:
+       w = y
+       y = f
 
 """
 

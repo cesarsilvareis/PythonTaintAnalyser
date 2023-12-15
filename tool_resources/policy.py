@@ -1,4 +1,4 @@
-from multilabel import MultiLabel
+from tool_resources import MultiLabel
 
 class Policy:
     def __init__(self, patterns):
