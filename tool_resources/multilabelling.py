@@ -7,7 +7,7 @@ class MultiLabelling:
     def get_mapping(self):
         return self.mapping
     def deep_copy(self):
-        return copy.deepcopy(self.mapping)
+        return copy.deepcopy(self)
     def get_multilabel(self, variable_name):
         multilabel = self.mapping.get(variable_name)
         if multilabel is None:

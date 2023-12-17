@@ -145,12 +145,20 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
         case "While":
             body = node.get('body')
             test = node.get('test')
-            #option 1: enter body
+            #option 0: pass loop: just the given multilabelling
+            original_multilabelling = multilabelling.deep_copy()
+            
+            #option 1: enter body (copy cycle iterations)
             while_runs_x_times = 1+count_assigns(body)
             print(f"\n @  WHILE RUNS {while_runs_x_times} times!!! @\n ")
-            for _ in range(while_runs_x_times):
-                for stmt in body:
-                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+            for n_cycles in range(1, while_runs_x_times + 1):
+                iter_multilabelling = original_multilabelling.deep_copy() # start loop with original multilabelling
+                
+                for _ in range(n_cycles):   # Run n_cycles iterations
+                    for stmt in body:
+                        iter_multilabelling = iter_multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+
+                multilabelling = multilabelling.combine(iter_multilabelling)
 
         case default:
             traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
