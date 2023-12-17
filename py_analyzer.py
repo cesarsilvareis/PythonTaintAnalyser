@@ -156,7 +156,7 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
                 
                 for _ in range(n_cycles):   # Run n_cycles iterations
                     for stmt in body:
-                        iter_multilabelling = iter_multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+                        iter_multilabelling = traverse_ast_stmt(stmt, policy, iter_multilabelling, vulnerabilities)
 
                 multilabelling = multilabelling.combine(iter_multilabelling)
 
@@ -213,7 +213,8 @@ while a == 1:
         if a == 1:
             w = y
             y = f
-d(a)
+    b = 7
+d(b)
 """
 
 
