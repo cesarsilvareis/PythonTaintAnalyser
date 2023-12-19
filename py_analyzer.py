@@ -65,9 +65,9 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
             # left: node (expression)
             # ops: (ast_type: operator[])
             # comparators: node[]
-            multiLabel = traverse_ast_expr(node.get('left'))
+            multiLabel = traverse_ast_expr(node.get('left'), policy, multilabelling, vulnerabilities)
             for comparator in node.get('comparators'):
-                multiLabel = multiLabel.combine(traverse_ast_expr(comparator), policy, multilabelling, vulnerabilities)
+                multiLabel = multiLabel.combine(traverse_ast_expr(comparator, policy, multilabelling, vulnerabilities))
             return multiLabel
         case "Call":
             # ast_type: Call
@@ -82,15 +82,13 @@ def traverse_ast_expr(node, policy, multilabelling, vulnerabilities):
                 # Get the multilabel of each argument fed to the function and check if there are illegal flows
                 argMultiLabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, argMultiLabel))
-                #multiLabel = multiLabel.combine(argMultiLabel)
+                multiLabel = multiLabel.combine(argMultiLabel)
             
             func = (function_name, node.get('lineno'))
             for pattern in policy.get_patterns_with_source(func):
                 multiLabel.add_source(pattern.get_name(), func)
             for pattern in policy.get_patterns_with_sanitizer(func):
                 multiLabel.add_sanitizer(pattern.get_name(), func)
-                #clean sources? TODO Se passou num sanitizer ent as sources antes ja n importam e podemso limpar para n detetar como vulnerabilidade (visto que nao guardamos timestamps ou ordem)
-                    
             return multiLabel            
         case "Expr":
             # ast_type: Expr
@@ -111,7 +109,7 @@ def count_assigns(body_nodes):
     return count_assigns(body_nodes[1:])
 
 
-def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
+def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities, pc):
     
     if node is None: return multilabelling
     
@@ -120,45 +118,40 @@ def traverse_ast_stmt(node, policy, multilabelling, vulnerabilities):
     match ast_type:
         case "Module":
             for stmt in node.get('body'):
-                multilabelling = traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities)
+                multilabelling = traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities, pc)
 
         case "Assign":
             assert len(node.get('targets')) == 1 # No multiple assignments in our WHILE language
             target_var = node.get('targets')[0]
             if target_var.get('ast_type') == "Name":
-                variable_name = target_var.get('id')
-                multilabelling.set_multilabel(variable_name, traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities))
+                multilabelling.set_multilabel(target_var.get('id'), traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc))
             else:
                 raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter
+            # x, y = blabla<-- bonus
         
         case "If":
-            teste = node.get('test') # TODO: Implicit vulnerabilities
-            
+            pc = pc.combine(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities))
+
+            ifmultilabelling = multilabelling.deep_copy()
             for stmt in node.get('body'):
-                multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
-            
+                ifmultilabelling = ifmultilabelling.combine(traverse_ast_stmt(stmt, policy, ifmultilabelling, vulnerabilities, pc))
+
             orelse = node.get('orelse')
+            elsemultilabelling = multilabelling.deep_copy()
             if orelse is not None:
                 for stmt in orelse:
-                    multilabelling = multilabelling.combine(traverse_ast_stmt(stmt, policy, multilabelling, vulnerabilities))
+                    elsemultilabelling = elsemultilabelling.combine(traverse_ast_stmt(stmt, policy, elsemultilabelling, vulnerabilities, pc))
+
+            multilabelling = multilabelling.combine(ifmultilabelling).combine(elsemultilabelling)
 
         case "While":
-            body = node.get('body')
-            test = node.get('test')
-            #option 0: pass loop: just the given multilabelling
-            original_multilabelling = multilabelling.deep_copy()
-            
-            #option 1: enter body (copy cycle iterations)
-            while_runs_x_times = 1+count_assigns(body)
-            print(f"\n @  WHILE RUNS {while_runs_x_times} times!!! @\n ")
-            for n_cycles in range(1, while_runs_x_times + 1):
-                iter_multilabelling = original_multilabelling.deep_copy() # start loop with original multilabelling
-                
-                for _ in range(n_cycles):   # Run n_cycles iterations
-                    for stmt in body:
-                        iter_multilabelling = traverse_ast_stmt(stmt, policy, iter_multilabelling, vulnerabilities)
+            pc = pc.combine(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities))
+            while_multilabelling = multilabelling.deep_copy()
+            for _ in range(1+count_assigns(node.get('body'))):
+                for stmt in node.get('body'):
+                    while_multilabelling = while_multilabelling.combine(traverse_ast_stmt(stmt, policy, while_multilabelling, vulnerabilities, pc))
 
-                multilabelling = multilabelling.combine(iter_multilabelling)
+            multilabelling = multilabelling.combine(while_multilabelling)
 
         case default:
             traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
@@ -176,7 +169,7 @@ def traverse_ast_trace(node, patterns):
     pattern_names = [pattern.get_name() for pattern in patterns]
     vulnerabilities = Vulnerabilities(pattern_names)
     
-    multilabelling = traverse_ast_stmt(node, policy, multilabelling, vulnerabilities)    
+    multilabelling = traverse_ast_stmt(node, policy, multilabelling, vulnerabilities, MultiLabel(policy.get_patterns()))    
     
     print(multilabelling)
     print("vuln", vulnerabilities)

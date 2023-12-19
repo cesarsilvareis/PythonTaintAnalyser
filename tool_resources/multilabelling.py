@@ -37,4 +37,4 @@ class MultiLabelling:
         return str(self)
     
     def __str__(self) -> str:
-        return str(self.mapping)
+        return str(''.join([f"{key} -> {value}\n" for key, value in self.mapping.items()]))
