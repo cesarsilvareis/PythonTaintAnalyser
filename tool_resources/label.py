@@ -6,10 +6,10 @@ class Label:
         self.sources = set()
         self.sanitizers = set()
     
-    def get_sources(self):
+    def get_sources(self) -> set[tuple[str, int]]:
         # Sources are tuples (source_name, lineno)
         return self.sources
-    def get_sanitizers(self):
+    def get_sanitizers(self) -> set[tuple[str, int]]:
         # Sanitizers are tuples (sanitizer_name, lineno)
         return self.sanitizers
     
@@ -26,9 +26,10 @@ class Label:
             label.add_sanitizer(sanitizer)
         return label
 
-    def combine(self, label):
+    def combine(self, label: 'Label'):
         newLabel = self.deep_copy()
         if label is None: return newLabel
+
         for source in label.get_sources(): 
             newLabel.add_source(source)
         for sanitizer in label.get_sanitizers():
@@ -39,4 +40,4 @@ class Label:
         return str(self)
     
     def __str__(self) -> str:
-        return f"{{sources: {self.sources}; sanitizers: {self.sanitizers}}}"
+        return str({"sources": self.sources, "sanitizers": self.sanitizers})

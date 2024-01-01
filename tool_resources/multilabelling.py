@@ -1,5 +1,7 @@
 import copy
 
+from tool_resources import MultiLabel
+
 class MultiLabelling:
     def __init__(self):
         self.mapping = {}
@@ -8,7 +10,7 @@ class MultiLabelling:
         return self.mapping
     def deep_copy(self):
         return copy.deepcopy(self)
-    def get_multilabel(self, variable_name):
+    def get_multilabel(self, variable_name) -> MultiLabel:
         multilabel = self.mapping.get(variable_name)
         if multilabel is None:
             raise ValueError(f"There is no mapping for variable with name: {variable_name}")
@@ -17,7 +19,7 @@ class MultiLabelling:
     def set_multilabel(self, variable_name, newMultilabel):
         self.mapping[variable_name] = newMultilabel
         
-    def combine(self, multilabelling):
+    def combine(self, multilabelling: 'MultiLabelling'):
         new_multilabelling = MultiLabelling()
         ml1_variables = set(self.mapping.keys())
         ml2_variables = set(multilabelling.get_mapping().keys())

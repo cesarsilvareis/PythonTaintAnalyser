@@ -1,7 +1,7 @@
-from tool_resources import Label
+from tool_resources import Pattern, Label
 
 class MultiLabel:
-    def __init__(self, patterns):
+    def __init__(self, patterns: list[Pattern]):
         self.mapping = {pattern.get_name(): {'label': Label(), 'pattern': pattern} for pattern in patterns}
     
     def get_entry(self, pattern_name):
@@ -9,9 +9,13 @@ class MultiLabel:
         if val is None:
             raise ValueError(f"There is no label matching the pattern with name: {pattern_name}")
         return val
-    def get_label(self, pattern_name):
+    def get_label(self, pattern_name) -> Label:
+        if pattern_name not in self.mapping:
+            return None
         return self.mapping.get(pattern_name).get('label')
-    def get_pattern(self, pattern_name):   
+    def get_pattern(self, pattern_name) -> Pattern:
+        if pattern_name not in self.mapping:
+            return None
         return self.mapping.get(pattern_name).get('pattern')
     def get_mapping(self):
         return self.mapping
@@ -30,7 +34,7 @@ class MultiLabel:
         if self.get_pattern(pattern_name).has_sanitizer(sanitizer):
             self.get_label(pattern_name).add_sanitizer(sanitizer)
     
-    def combine(self, multiLabel):
+    def combine(self, multiLabel: 'MultiLabel'):
         l1_patterns = set([val.get('pattern') for val in self.mapping.values()]) # Get the patterns of this MultiLabel
         l2_patterns = set([val.get('pattern') for val in multiLabel.get_mapping().values()]) # Get the patterns of the received multiLabel
         combined_patterns = list(l1_patterns.union(l2_patterns)) # Combine both patterns
