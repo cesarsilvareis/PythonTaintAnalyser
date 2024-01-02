@@ -1,5 +1,4 @@
 import json
-
 from tool_resources import MultiLabel
 
 class Vulnerability:
@@ -10,10 +9,10 @@ class Vulnerability:
         self.sanitizers = sanitizers
 
     def hasUnsanitizedFlows(self) -> str:
-        return "YES" if len(self.sanitizers) == 0 else "NO"
+        return "yes" if len(self.sanitizers) == 0 else "no"
 
     def formatVulnerability(self) -> str:
-        return str({
+        return json.dumps({
                 "vulnerability": self.name,
                 "source": self.source,
                 "sink": self.sink,
@@ -45,4 +44,4 @@ class Vulnerabilities:
         return str(self)
     
     def __str__(self) -> str:
-        return str(self.mapping)
+        return str(sum(self.mapping.values(), []))

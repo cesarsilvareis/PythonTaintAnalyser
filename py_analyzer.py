@@ -8,9 +8,12 @@ from tool_resources import *
 import argparse
 import os
 
-expressions = ["Constant", "Name", "BinOp", "UnaryOp", "BoolOp", "Call", "Expr"]
-statements = ["Module", "Assign", "If", "While"]
+debug = False
 
+def debug_print(msg, **format_args):
+    global debug
+    if debug:
+        print(f"{msg}", **format_args, file=sys.stderr)
 
 def check_file(filename: str):
     if not os.path.isfile(filename):
@@ -32,7 +35,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
     if node is None: return MultiLabel(policy.get_patterns())
     
     ast_type = node.get('ast_type')
-    print("Parsing: ",ast_type)
+    debug_print(f"Expr parsing: {ast_type}")
     match ast_type:
         case "Constant":
             # ast_type: Constant
@@ -44,6 +47,11 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             multilabel = MultiLabel(policy.get_patterns())
             try:
                 multilabel = multilabelling.get_multilabel(node.get('id'))
+                # This keeps source sequence when assigning left source: s1 = s2; sink = s1 --> s1 & s2
+                var = (node.get("id"), node.get("lineno"))
+                for pattern in policy.get_patterns_with_source(var):
+                    multilabel.add_source(pattern.get_name(), var)
+
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
                 for pattern_name in multilabel.get_mapping(): 
@@ -82,6 +90,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             for arg in node.get('args'):
                 # Get the multilabel of each argument fed to the function and check if there are illegal flows
                 arg_multilabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
+                # Report illegal flows for patterns of which the function is sink
                 illegal_flows = policy.filter_ilflows(function_name, arg_multilabel)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), illegal_flows)
                 multilabel = multilabel.combine(arg_multilabel)
@@ -117,7 +126,7 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
     if node is None: return multilabelling
     
     ast_type = node.get('ast_type')
-    print("Parsing (stmt): ",ast_type)
+    debug_print(f"Stmt parsing: {ast_type}")
     match ast_type:
         case "Module":
             for stmt in node.get('body'):
@@ -127,8 +136,15 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
             assert len(node.get('targets')) == 1 # No multiple assignments in our WHILE language
             target_var = node.get('targets')[0]
             if target_var.get('ast_type') == "Name":
+                var_name = target_var.get('id')
                 left_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
-                multilabelling.set_multilabel(target_var.get('id'), left_multilabel)
+
+                # Report illegal flows for patterns of which the left side is sink
+                illegal_flows = policy.filter_ilflows(var_name, left_multilabel)
+                vulnerabilities.record_ilflows((var_name, node.get('lineno')), illegal_flows)
+
+                multilabelling.set_multilabel(var_name, left_multilabel)
+
             else:
                 raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter
             # x, y = blabla<-- bonus
@@ -162,7 +178,7 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
     
     return multilabelling
 
-def analyse_code(code, patterns: list[Pattern]):
+def analyse_code(code, patterns: list[Pattern]) -> Vulnerabilities:
     assert(code.get('ast_type') == 'Module')
     
     policy = Policy(patterns)
@@ -172,56 +188,47 @@ def analyse_code(code, patterns: list[Pattern]):
     multilabelling = MultiLabelling()
     multilabelling = traverse_ast_stmt(code, policy, multilabelling, vulnerabilities, pc)    
     
-    print(multilabelling)
-    print("vuln", vulnerabilities)
+    debug_print(f"Final multilabelling: {multilabelling}")
         
-    return multilabelling
+    return vulnerabilities
 
         
 def main():
-    
+    global debug
+
     parser = argparse.ArgumentParser(description='Tool for analyzing program slices')
-    parser.add_argument('program_file', type=str, help='Name of the Python file containing the program slice to analyze')
-    parser.add_argument('vulnerability_patterns_file', type=str, help='Name of the JSON file containing the list of vulnerability patterns to consider')
+    parser.add_argument('program_file', type=str, 
+                        help='Name of the Python file containing the program slice to analyze')
+    parser.add_argument('vulnerability_patterns_file', type=str, 
+                        help='Name of the JSON file containing the list of vulnerability patterns to consider')
+    parser.add_argument('--debug', action=argparse.BooleanOptionalAction, default=False)
     
     args = parser.parse_args()
-    
-    print(f"Program file: {args.program_file}")
-    print(f"Vulnerability patterns file: {args.vulnerability_patterns_file}")
     
     check_file(args.program_file)
     check_file(args.vulnerability_patterns_file)
 
+    debug = args.debug
+
     with open(args.program_file, 'r') as f:
         program = f.read()
         
-    program = """
-a = 1
-b = 2
-
-if b:
-    a = c()
-else:
-    b = a
-
-d(b)    # passed
-
-a = 1
-b = 2
-x = 3
-while b:
-    a = c()
-    b = x
-    if a == 3:
-        f = 2
-    else:
-        f = 3
-
-    if a == 2:
-        b = 1
-d(b)
-
-"""
+#     program = """
+# a = c()
+# z = c()
+# f = 0
+# b = 0
+# y = 0
+# while a == 1:
+#     f = b
+#     b = a
+#     while a == 1:
+#         if a == 1:
+#             w = y
+#             y = f
+#     b = 7
+# d(b)
+# """
 
     tree = ast.parse(program)
     ast_json = astexport.export_dict(tree)
@@ -236,18 +243,15 @@ d(b)
                 sinks=raw["sinks"],
                 implicit_mode= ( str.lower(raw["implicit"]) == "yes" )
         ), patterns_raw))
-        # TODO: parse 'implicit' element
 
-    print(f"[PROGRAM_AST]\n{json.dumps(ast_json, indent=4)}")
-    print("----------------------------------------")
-    print(f"[PROGRAM]\n{program}")
-    print("----------------------------------------")
-    print(f"[PATTERNS_RAW]\n{patterns_raw}")
-    print("----------------------------------------")
-    print(f"[PATTERNS]\n{patterns}")
-    print("----------------------------------------")    
 
-    analyse_code(ast_json, patterns)
+    debug_print(f"[PROGRAM_AST]\n{json.dumps(ast_json, indent=4)}\n{70*'-'}")
+    debug_print(f"[PROGRAM]\n{program}\n{70*'-'}")
+    debug_print(f"[PATTERNS_RAW]\n{patterns_raw}\n{70*'-'}")
+    debug_print(f"[PATTERNS]\n{patterns}\n{70*'-'}")
+
+    result = analyse_code(ast_json, patterns)
+    print(result, file=sys.stdout)
 
 
 if __name__ == "__main__":
