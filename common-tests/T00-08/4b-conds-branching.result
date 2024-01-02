@@ -1,0 +1,7 @@
+
+********************************************************************************
+
+[91m[-] Incorrect Output in file common-tests/T00-08/4b-conds-branching.myoutput.json:
+sanitized_flows attribute is of wrong type: [['c', 6]]
+{'vulnerability': 'C_1', 'source': ['a', 6], 'sink': ['e', 7], 'unsanitized_flows': 'no', 'sanitized_flows': [['c', 6]]}[0m
+

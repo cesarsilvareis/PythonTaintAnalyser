@@ -1,0 +1,7 @@
+
+********************************************************************************
+
+[91m[-] Incorrect Output in file common-tests/T00-09/5a-loops-unfolding.myoutput.json:
+sanitized_flows attribute is of wrong type: [['d', 3]]
+{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['h', 6], 'unsanitized_flows': 'no', 'sanitized_flows': [['d', 3]]}[0m
+

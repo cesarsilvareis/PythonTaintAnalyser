@@ -1,0 +1,7 @@
+
+********************************************************************************
+
+[91m[-] Incorrect Output in file common-tests/T00-04/3a-expr-func-calls.myoutput.json:
+sanitized_flows attribute is of wrong type: [['f', 2]]
+{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['e', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [['f', 2]]}[0m
+
