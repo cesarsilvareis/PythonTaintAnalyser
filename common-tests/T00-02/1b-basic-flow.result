@@ -4,12 +4,12 @@
 [92m[+] All outputs of file common-tests/T00-02/1b-basic-flow.output.json are well defined[0m
 
 GOOD FLOWS
-[{'vulnerability': 'A_1', 'source': ['c', 4], 'sink': ['d', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['b', 2], 'sink': ['d', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['c', 4], 'sink': ['e', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_4', 'source': ['b', 2], 'sink': ['e', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+[{'vulnerability': 'A_1', 'source': ['b', 2], 'sink': ['d', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['c', 4], 'sink': ['d', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['b', 2], 'sink': ['e', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_4', 'source': ['c', 4], 'sink': ['e', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
-MISSING FLOWS
+WRONG FLOWS
 [][0m
 
 [93m
-WRONG FLOWS
+MISSING FLOWS
 [][0m

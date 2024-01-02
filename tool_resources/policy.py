@@ -31,7 +31,6 @@ class Policy:
         new_multilabel = MultiLabel(self.patterns)
         for pattern in self.get_patterns_with_sink(function_name):
             if len(multiLabel.get_label(pattern.get_name()).get_sources()) > 0:
-                # new_multilabel = new_multilabel.combine(MultiLabel([pattern,]))
                 new_multilabel.add_label(pattern.get_name(), multiLabel.get_label(pattern.get_name()))
         return new_multilabel
     

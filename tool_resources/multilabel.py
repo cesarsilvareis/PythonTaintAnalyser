@@ -29,6 +29,10 @@ class MultiLabel:
         if self.get_pattern(pattern_name).has_source(source):
             self.get_label(pattern_name).add_source(source)
             
+    def force_add_source_to_all_patterns(self, source):
+        for pattern_name in self.mapping:
+            self.get_label(pattern_name).add_source(source)
+
     def add_sanitizer(self, pattern_name, sanitizer):
         if self.mapping.get(pattern_name) is None: return
         if self.get_pattern(pattern_name).has_sanitizer(sanitizer):

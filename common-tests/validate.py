@@ -184,7 +184,7 @@ def validate_output_file(filename: str):
 ### Check if output in obtained file is the same as in target file
 def check_output(obtained, target):
     good = []
-    missing = []
+    wrong = []
 
     with open(obtained, 'r') as f:
         output_list = json.loads(f.read())
@@ -197,11 +197,11 @@ def check_output(obtained, target):
         if res:
             good.append(output)
         else:
-            missing.append(output)
+            wrong.append(output)
 
     print(f"\nGOOD FLOWS\n{good}")
-    print(f"\n{bcolors.RED}\nMISSING FLOWS\n{missing}{bcolors.ENDC}")
-    print(f"\n{bcolors.YELLOW}\nWRONG FLOWS\n{target_list}{bcolors.ENDC}")
+    print(f"\n{bcolors.RED}\nWRONG FLOWS\n{wrong}{bcolors.ENDC}")
+    print(f"\n{bcolors.YELLOW}\nMISSING FLOWS\n{target_list}{bcolors.ENDC}")
 
 
 

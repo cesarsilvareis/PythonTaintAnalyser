@@ -7,9 +7,9 @@ GOOD FLOWS
 [{'vulnerability': 'A_1', 'source': ['c', 2], 'sink': ['e', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
-MISSING FLOWS
+WRONG FLOWS
 [][0m
 
 [93m
-WRONG FLOWS
+MISSING FLOWS
 [][0m

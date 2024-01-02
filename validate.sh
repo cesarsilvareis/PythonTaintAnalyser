@@ -9,6 +9,8 @@ for dir in "$directory"/*; do
             if [ -f "$file" ]; then
                 filename=$(basename "$file")
                 test_name="${filename%%.*}" # Extract the name up to the first '.'
+                echo ""
+                echo ""
                 echo "Testing: $test_name"
 
                 python py_analyzer.py "$directory"/"$test_id"/"$test_name".py "$directory"/"$test_id"/"$test_name".patterns.json > "$directory"/"$test_id"/"$test_name".myoutput.json

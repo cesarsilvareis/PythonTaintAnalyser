@@ -54,8 +54,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
 
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
-                for pattern_name in multilabel.get_mapping(): 
-                    multilabel.add_source(pattern_name, (node.get('id'), node.get('lineno')))
+                multilabel.force_add_source_to_all_patterns((node.get('id'), node.get('lineno')))
             return multilabel
         case "BinOp" | "BoolOp":
             # ast_type: BinOp | BoolOp
@@ -63,7 +62,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             # op: (ast_type: operator)
             # right: node (expression)
             return traverse_ast_expr(node.get('left'), policy, multilabelling, vulnerabilities).\
-                combine(traverse_ast_expr(node.get('right')), policy, multilabelling, vulnerabilities)
+                combine(traverse_ast_expr(node.get('right'), policy, multilabelling, vulnerabilities))
         case "UnaryOp":
             # ast_type: UnaryOp
             # op: (ast_type: operator)
@@ -88,19 +87,17 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             multilabel = MultiLabel(policy.get_patterns())
 
             for arg in node.get('args'):
-                # Get the multilabel of each argument fed to the function and check if there are illegal flows
-                arg_multilabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
-                # Report illegal flows for patterns of which the function is sink
-                illegal_flows = policy.filter_ilflows(function_name, arg_multilabel)
-                vulnerabilities.record_ilflows((function_name, node.get('lineno')), illegal_flows)
-                multilabel = multilabel.combine(arg_multilabel)
+                multilabel = multilabel.combine(traverse_ast_expr(arg, policy, multilabelling, vulnerabilities))
+
+            vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
+
             
-            func = (function_name, node.get('lineno'))
-            for pattern in policy.get_patterns_with_source(func):
-                multilabel.add_source(pattern.get_name(), func)
-            for pattern in policy.get_patterns_with_sanitizer(func):
-                multilabel.add_sanitizer(pattern.get_name(), func)
-            return multilabel            
+            for pattern in policy.get_patterns_with_source((function_name, node.get('lineno'))):
+                multilabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
+
+            for pattern in policy.get_patterns_with_sanitizer((function_name, node.get('lineno'))):
+                multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(multilabel.get_label(pattern.get_name()).get_sources())))
+            return multilabel  
         case "Expr":
             # ast_type: Expr
             # value: node (expression)
@@ -146,8 +143,7 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                 multilabelling.set_multilabel(var_name, left_multilabel)
 
             else:
-                raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter
-            # x, y = blabla<-- bonus
+                raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter: x, y = blabla<-- bonus
         
         case "If":
             pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)

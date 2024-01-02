@@ -1,7 +1,15 @@
 
 ********************************************************************************
+[92m[+] All outputs of file common-tests/T00-04/3a-expr-func-calls.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T00-04/3a-expr-func-calls.output.json are well defined[0m
 
-[91m[-] Incorrect Output in file common-tests/T00-04/3a-expr-func-calls.myoutput.json:
-sanitized_flows attribute is of wrong type: [['f', 2]]
-{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['e', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [['f', 2]]}[0m
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['e', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [[['f', 2]]]}]
 
+[91m
+WRONG FLOWS
+[{'vulnerability': 'A_2', 'source': ['b', 1], 'sink': ['c', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [[['f', 2]]]}, {'vulnerability': 'A_3', 'source': ['b', 1], 'sink': ['e', 3], 'unsanitized_flows': 'no', 'sanitized_flows': [[['f', 2]]]}, {'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['c', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [[['e', 2], ['d', 2]]]}][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A_2', 'source': ['b', 1], 'sink': ['c', 2], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['f', 2]]]}, {'vulnerability': 'A_3', 'source': ['b', 1], 'sink': ['e', 3], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['f', 2]]]}, {'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['c', 2], 'unsanitized_flows': 'no', 'sanitized_flows': [[['d', 2]]]}][0m
