@@ -19,6 +19,9 @@ class Policy:
     def get_patterns_with_sink(self, sink: str):
         return [pattern for pattern in self.patterns if pattern.has_sink(sink)]
     
+    def get_patterns_with_unknown_var(self, var: tuple[str, int]):
+        return [pattern for pattern in self.patterns if not (pattern.has_sanitizer(var) or pattern.has_sink(var[0]))]
+
     def get_implicit_patterns(self):
         return [pattern for pattern in self.patterns if pattern.get_implicit_mode()]
     

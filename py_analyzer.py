@@ -45,16 +45,17 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             # ast_type: Name
             # id: variable_name
             multilabel = MultiLabel(policy.get_patterns())
+            var = (node.get("id"), node.get("lineno"))
             try:
                 multilabel = multilabelling.get_multilabel(node.get('id'))
                 # This keeps source sequence when assigning left source: s1 = s2; sink = s1 --> s1 & s2
-                var = (node.get("id"), node.get("lineno"))
                 for pattern in policy.get_patterns_with_source(var):
                     multilabel.add_source(pattern.get_name(), var)
 
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
-                multilabel.force_add_source_to_all_patterns((node.get('id'), node.get('lineno')))
+                for pattern in policy.get_patterns_with_unknown_var(var):
+                    multilabel.add_source(pattern.get_name(), var)
             return multilabel
         case "BinOp" | "BoolOp":
             # ast_type: BinOp | BoolOp
