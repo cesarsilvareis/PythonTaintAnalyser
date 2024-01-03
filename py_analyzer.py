@@ -102,21 +102,27 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             # keywords: ?
             if node.get('func').get('ast_type') == "Name":
                 function_name = node.get('func').get('id')
-
                 multilabel = MultiLabel(policy.get_patterns())
-
+                print('@')
                 for arg in node.get('args'):
-                    multilabel = multilabel.combine(traverse_ast_expr(arg, policy, multilabelling, vulnerabilities))
+                    print(f"@@ Flow from {arg.get('id')} -> {function_name}")
+                    # Create the multilabel by traversing the expression of each of the fcall arguments
+                    argmultilabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities)
+                    # Record the possible illegal flows for calling the function with this argument (argmultilabel)
+                    vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, argmultilabel))
+                    # Build the result multilabel of calling the function by combining the arguments
+                    multilabel = multilabel.combine(argmultilabel)
 
-                vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
+                    # Add this function as a source for each pattern of the resulting multilabel that has it as source
+                    for pattern in policy.get_patterns_with_source((function_name, node.get('lineno'))):
+                        multilabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
 
-                for pattern in policy.get_patterns_with_source((function_name, node.get('lineno'))):
-                    multilabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
+                    # Add this function as a sanitizer of each pattern of the resulting multilabel, and the respective sources being sanitized
+                    for pattern in policy.get_patterns_with_sanitizer((function_name, node.get('lineno'))):
+                        sanitized_sources = [src[0] for src in argmultilabel.get_label(pattern.get_name()).get_sources()]
+                        if len(sanitized_sources) > 0:
+                            multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(sanitized_sources)))
 
-                for pattern in policy.get_patterns_with_sanitizer((function_name, node.get('lineno'))):
-                    multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), \
-                        tuple([src[0] for src in multilabel.get_label(pattern.get_name()).get_sources()])
-                    ))
                 return multilabel
                 
             elif node.get('func').get('ast_type') == "Attribute":

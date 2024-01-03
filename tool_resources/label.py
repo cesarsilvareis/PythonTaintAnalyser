@@ -21,6 +21,9 @@ class Label:
     def get_unsanitized_flows(self):
         return self.unsanitized_flows
     
+    def add_sanitized_flows(self, sanitizers):
+        self.sanitized_flows.append([(sanitizer[0], sanitizer[1]) for sanitizer in sanitizers])
+    
     def updateFlows(self, sanitizer):
         unsanitized_flows = copy.deepcopy(self.unsanitized_flows)
         for unsflow in unsanitized_flows:

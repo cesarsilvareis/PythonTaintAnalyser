@@ -26,14 +26,13 @@ class Policy:
         return [pattern for pattern in self.patterns if pattern.get_implicit_mode()]
     
     def filter_ilflows(self, function_name: str, multiLabel: MultiLabel):
-        # Given a name of a function and a multiLabel (fed to the function)
-        # Returns a multilabel representing the illegal flows:
-        # -> Has a pattern for which the function_name is a sink
-        # -> Has atleast one source on the label corresponding to that pattern
-
+        # multiLabel corresponds to an argument -> Has its sources and sanitizers, together with its flows
         new_multilabel = MultiLabel(self.patterns)
+        # For each pattern of the multiLabel
         for pattern in self.get_patterns_with_sink(function_name):
+            # If there are sources for that pattern
             if len(multiLabel.get_label(pattern.get_name()).get_sources()) > 0:
+                # Save the label for that pattern to a new multilabel
                 new_multilabel.add_label(pattern.get_name(), multiLabel.get_label(pattern.get_name()))
         return new_multilabel
     
