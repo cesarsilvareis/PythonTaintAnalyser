@@ -54,8 +54,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
 
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
-                for pattern in policy.get_patterns_with_unknown_var(var):
-                    multilabel.add_source(pattern.get_name(), var)
+                multilabel.force_add_source_to_all_patterns(var)
             return multilabel
         case "BinOp" | "BoolOp":
             # ast_type: BinOp | BoolOp
