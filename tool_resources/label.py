@@ -27,6 +27,7 @@ class Label:
             if unsflow[0] in sanitizer[2]:
                 self.unsanitized_flows.remove(unsflow)
         self.add_sanitized_flow((sanitizer[0], sanitizer[1]))
+        #print(f"Adding sanitized flow: {(sanitizer[0], sanitizer[1])} to label: {self}; current sanitized flows: {self.sanitized_flows}")
     
     def add_source(self, source):
         self.sources.add(source)
@@ -67,26 +68,6 @@ class Label:
             combinedLabel.add_sanitized_flow(flow)
         for flow in label.get_unsanitized_flows().union(self.get_unsanitized_flows()):
             combinedLabel.add_unsanitized_flow(flow)
-
-        # Find the common sources to both labels
-        #common_sources = set([src[0] for src in label.get_sources()]).intersection(set([src[0] for src in self.get_sources()]))
-
-        # Add every sanitizer that does not sanitize a common source to the combinedLabel, example below:
-        # z1 = src1(l)
-        # z2 = src2(l)
-        # a = san1(z1)
-        # b = san2(z2)
-        # x = f(a, b) -> {a: {sources: src1, san: (san1, lineno, (src1,)); b: {sources: src2, san: (san2, lineno, (src2),); }}
-        #             -> x: {sources: src1, src2; san: (san1, lineno, (src1,)), (san2, lineno, (src2,))}
-        #sanitizers = copy.deepcopy(label.get_sanitizers().union(self.get_sanitizers()))
-        #for sanitizer in label.get_sanitizers().union(self.get_sanitizers()):
-        #    if len(list(filter(lambda src: src in common_sources, sanitizer[2]))) == 0:
-        #        combinedLabel.add_sanitizer(sanitizer)
-        #        sanitizers.remove(sanitizer)
-        
-        # Remaining sanitizers sanitize some common source -> Potential for unsanitized flows: in case only one of the label sanitizes the common source
-        #for sanitizer in sanitizers:
-            
         #print(f"Combining Labels self: {self} with label: {label} results in combinedLabel: {combinedLabel}\n")
         return combinedLabel
 

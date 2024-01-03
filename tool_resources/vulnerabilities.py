@@ -32,7 +32,6 @@ class Vulnerabilities:
     def __init__(self, vulnerabilities: list[str]):
         self.mapping = { vulnerability_name: [] for vulnerability_name in vulnerabilities }
     
-    
     def filter_sflows(self, source, label):
         sflows = []
         for sflow in label.get_sanitized_flows():
@@ -42,7 +41,7 @@ class Vulnerabilities:
     
     def record_ilflows(self, sink: str, illegal_flows: MultiLabel):
         for pattern_name in illegal_flows.get_mapping():
-            #print(f"---->>>> {illegal_flows.get_label(pattern_name)}")
+            print(f"---->>>> {illegal_flows.get_label(pattern_name)}")
             for source in illegal_flows.get_label(pattern_name).get_sources():
                 label = illegal_flows.get_label(pattern_name)
                 self.mapping[pattern_name].append(Vulnerability(

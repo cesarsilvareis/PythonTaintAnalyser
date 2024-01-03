@@ -117,7 +117,8 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                     multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), \
                         tuple([src[0] for src in multilabel.get_label(pattern.get_name()).get_sources()])
                     ))
-                return multilabel  
+                return multilabel
+                
             elif node.get('func').get('ast_type') == "Attribute":
                 
                 multilabel = MultiLabel(policy.get_patterns())
