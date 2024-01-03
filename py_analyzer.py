@@ -27,12 +27,17 @@ def check_file(filename: str):
 #     if traceStr != "": return traceStr[:-4]
 #     return traceStr
 
+unitialized_vars = []
+
+
 def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling, 
                       vulnerabilities: Vulnerabilities) -> MultiLabel:
     # Expressions are assigned the least upper bound to the variables that are read
     # In this case the least upper bound of the multilabels that compose the resulting expression multilabel
     
     if node is None: return MultiLabel(policy.get_patterns())
+    
+    global unitialized_vars
     
     ast_type = node.get('ast_type')
     debug_print(f"Expr parsing: {ast_type}")
@@ -54,6 +59,10 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
                 multilabel.force_add_source_to_all_patterns(var)
+                
+            if node.get("id") in unitialized_vars:
+                multilabel.force_add_source_to_all_patterns(var)
+                
             return multilabel
         
         case "Attribute":
@@ -183,6 +192,8 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
     
     if node is None: return multilabelling
     
+    global unitialized_vars
+    
     ast_type = node.get('ast_type')
     debug_print(f"Stmt parsing: {ast_type}")
     match ast_type:
@@ -195,6 +206,11 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
             target_var = node.get('targets')[0]
             if target_var.get('ast_type') == "Name":
                 var_name = target_var.get('id')
+                
+                if var_name in unitialized_vars:
+                    unitialized_vars.remove(var_name)
+                
+                var_name = target_var.get('id')
                 left_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
 
                 # Report illegal flows for patterns of which the left side is sink
@@ -206,6 +222,9 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
             elif target_var.get('ast_type') == "Attribute":
                 var_name = target_var.get('value').get('id')
                 attribute = target_var.get('attr')
+                
+                if attribute in unitialized_vars:
+                    unitialized_vars.remove(attribute)
                 
                 right_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
                 # Report illegal flows for patterns of which the left side is sink
@@ -223,28 +242,26 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                 raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter: x, y = blabla<-- bonus
         
         case "If":
+        
             pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)
 
             ifmultilabelling = multilabelling.deep_copy()
             for stmt in node.get('body'):
                 ifmultilabelling = ifmultilabelling.combine(traverse_ast_stmt(stmt, policy, ifmultilabelling, vulnerabilities, pc))
-
+            
             orelse = node.get('orelse')
             elsemultilabelling = multilabelling.deep_copy()
-            if orelse is not None:
+            if orelse is not None and orelse != []:
                 for stmt in orelse:
                     elsemultilabelling = elsemultilabelling.combine(traverse_ast_stmt(stmt, policy, elsemultilabelling, vulnerabilities, pc))
-
+    
+    
+            for var_name in ifmultilabelling.get_mapping():
+                if var_name not in elsemultilabelling.get_mapping() and var_name not in multilabelling.get_mapping():
+                    unitialized_vars.append(var_name)
+                    
+                        
             multilabelling = multilabelling.combine(ifmultilabelling).combine(elsemultilabelling)
-
-        case "While":
-            pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)
-            while_multilabelling = multilabelling.deep_copy()
-            for _ in range(1+count_assigns(node.get('body'))):
-                for stmt in node.get('body'):
-                    while_multilabelling = while_multilabelling.combine(traverse_ast_stmt(stmt, policy, while_multilabelling, vulnerabilities, pc))
-
-            multilabelling = multilabelling.combine(while_multilabelling)
 
         case default:
             traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
