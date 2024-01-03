@@ -23,9 +23,11 @@ class Pattern:
 
     def has_source(self, source: tuple[str, int]) -> bool:
         # Source is a tuple (source_name, lineno)
+        #print(f"Checking if pattern: {self.name} has source[0]: {source[0]} in self.sources: {self.sources}")
         return source[0] in self.sources
     def has_sanitizer(self, sanitizer: tuple[str, int]) -> bool:
         # Sanitizer is a tuple (sanitizer_name, lineno)
+        #print(f"Checking if pattern: {self.name} has sanitizer[0]: {sanitizer[0]} in self.sanitizers: {self.sanitizers}")
         return sanitizer[0] in self.sanitizers
     def has_sink(self, sink: str) -> bool:
         return sink in self.sinks

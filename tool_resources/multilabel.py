@@ -47,13 +47,18 @@ class MultiLabel:
         for pattern_name in newMultiLabel.get_mapping():    
             # For each pattern combine the label of this MultiLabel with the label of the received multiLabel into a combinedLabel
             combinedLabel = newMultiLabel.get_label(pattern_name).combine(self.get_label(pattern_name)).combine(multiLabel.get_label(pattern_name))
+            #print(f"@CombinedLabel before adding sources and sanitizers to newMultiLabel: {combinedLabel}")
             # Add the combinedLabel sources to the new MultiLabel label for this pattern (ensure the add_source conditions)
             for source in combinedLabel.get_sources():
                 newMultiLabel.get_label(pattern_name).add_source(source)
             # Add the combinedLabel sanitizers to the new MultiLabel label for this pattern (ensure the add_sanitizer conditions)
             for sanitizer in combinedLabel.get_sanitizers():
                 newMultiLabel.get_label(pattern_name).add_sanitizer(sanitizer)
+            for flow in combinedLabel.get_sanitized_flows():
+                newMultiLabel.get_label(pattern_name).add_sanitized_flow(flow)
+
                 
+        #print(f"Combining MultiLabels self: {self} with label: {multiLabel} results in newMultiLabel: {newMultiLabel}\n")
         return newMultiLabel
     
     

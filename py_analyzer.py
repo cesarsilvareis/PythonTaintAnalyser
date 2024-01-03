@@ -45,16 +45,17 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
             # ast_type: Name
             # id: variable_name
             multilabel = MultiLabel(policy.get_patterns())
+            var = (node.get("id"), node.get("lineno"))
             try:
                 multilabel = multilabelling.get_multilabel(node.get('id'))
                 # This keeps source sequence when assigning left source: s1 = s2; sink = s1 --> s1 & s2
-                var = (node.get("id"), node.get("lineno"))
                 for pattern in policy.get_patterns_with_source(var):
                     multilabel.add_source(pattern.get_name(), var)
 
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
-                multilabel.force_add_source_to_all_patterns((node.get('id'), node.get('lineno')))
+                for pattern in policy.get_patterns_with_unknown_var(var):
+                    multilabel.add_source(pattern.get_name(), var)
             return multilabel
         case "BinOp" | "BoolOp":
             # ast_type: BinOp | BoolOp
@@ -91,12 +92,13 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
 
             vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
 
-            
             for pattern in policy.get_patterns_with_source((function_name, node.get('lineno'))):
                 multilabel.add_source(pattern.get_name(), (function_name, node.get('lineno')))
 
             for pattern in policy.get_patterns_with_sanitizer((function_name, node.get('lineno'))):
-                multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(multilabel.get_label(pattern.get_name()).get_sources())))
+                multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), \
+                    tuple([src[0] for src in multilabel.get_label(pattern.get_name()).get_sources()])
+                ))
             return multilabel  
         case "Expr":
             # ast_type: Expr

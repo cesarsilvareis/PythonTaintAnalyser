@@ -1,2 +1,15 @@
 
 ********************************************************************************
+[92m[+] All outputs of file common-tests/T00-07/4a-conds-branching.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T00-07/4a-conds-branching.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['f', 4], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['d', 6], 'sink': ['c', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_2', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'B_2', 'source': ['a', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_4', 'source': ['c', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['a', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['c', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
