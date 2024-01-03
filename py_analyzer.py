@@ -50,7 +50,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                 multilabel = multilabelling.get_multilabel(node.get('id'))
                 # This keeps source sequence when assigning left source: s1 = s2; sink = s1 --> s1 & s2
                 for pattern in policy.get_patterns_with_source(var):
-                    multilabel.add_source(pattern.get_name(), var)
+                    multilabel.add_source(pattern.get_name(), var)                    
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
                 multilabel.force_add_source_to_all_patterns(var)
@@ -106,6 +106,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
 
                 # Create the multilabel by traversing the expression of each of the fcall arguments and return it
                 for arg in node.get('args'):
+                    #print(f"@ Function {function_name} arg: {arg.get('id')}")
                     argmultilabel = traverse_ast_expr(arg, policy, multilabelling, vulnerabilities).deep_copy()
 
                     # Add the outter function as a sanitizer for every pattern of the argmultilabel that has it as a sanitizer
@@ -115,11 +116,11 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                         if len(sanitized_sources) > 0:
                             argmultilabel.get_label(pattern.get_name()).add_sanitizer((function_name, node.get('lineno'), tuple(sanitized_sources)))
                         argmultilabel.get_label(pattern.get_name()).trim_empty_sanitized_flow()
-
-                    # Record the possible illegal flows for calling the function with this argument (argmultilabel)
-                    vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, argmultilabel))
                     # Build the result multilabel of calling the function by combining the arguments
                     multilabel = multilabel.combine(argmultilabel)
+
+                # Record the possible illegal flows for calling the function with this argument (argmultilabel)
+                vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
 
                 # Add this function as a source for each pattern of the resulting multilabel that has it as source
                 for pattern in policy.get_patterns_with_source((function_name, node.get('lineno'))):

@@ -32,14 +32,15 @@ class Vulnerabilities:
     def __init__(self, vulnerabilities: list[str]):
         self.mapping = { vulnerability_name: [] for vulnerability_name in vulnerabilities }
     
-    def filter_sflows(self, source, label):
-        sflows = []
-        for sflow in label.get_sanitized_flows():
-            sanitizers = list(filter(lambda san: san[0] == sflow[0], label.get_sanitizers()))
-            if len(sanitizers) == 0: continue
-            if source[0] in sanitizers[0][2]: sflows.append(sflow)
-        return sflows
-    
+    def filter_sflows(self, source, sanitizers, flows):
+        if type(flows) is tuple:
+            _sans = [san[2] for san in sanitizers if flows[0] == san[0]]
+            return flows if len(_sans) > 0 and source[0] in _sans[0] else []
+        elif type(flows) is list:
+            if len(flows) == 0: return []
+        head_res = self.filter_sflows(source, sanitizers, flows[0])
+        return ([head_res] if head_res != [] else []) + self.filter_sflows(source, sanitizers, flows[1:])
+
     def record_ilflows(self, sink: str, illegal_flows: MultiLabel):
         for pattern_name in illegal_flows.get_mapping():
             #print(f"---->>>> {illegal_flows.get_label(pattern_name)}")
@@ -47,7 +48,9 @@ class Vulnerabilities:
                 label = illegal_flows.get_label(pattern_name)
                 vuln = Vulnerability(
                     f"{pattern_name}_{len(self.mapping[pattern_name])+1}",
-                    sink, source, label.get_sanitized_flows(), label.get_unsanitized_flows()
+                    sink, source, 
+                    self.filter_sflows(source, label.get_sanitizers(), label.get_sanitized_flows()),
+                    label.get_unsanitized_flows()
                 )
                 self.mapping[pattern_name].append(vuln)
 
