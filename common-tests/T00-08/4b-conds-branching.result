@@ -4,6 +4,7 @@
 [92m[+] All outputs of file common-tests/T00-08/4b-conds-branching.output.json are well defined[0m
 
 GOOD FLOWS
+<<<<<<< HEAD
 [{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['d', 6], 'sink': ['a', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'C_3', 'source': ['a', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
@@ -13,3 +14,14 @@ WRONG FLOWS
 [93m
 MISSING FLOWS
 [{'vulnerability': 'A_3', 'source': ['d', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'C_1', 'source': ['a', 6], 'sink': ['e', 7], 'unsanitized_flows': 'no', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_2', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'no', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_4', 'source': ['d', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
+=======
+[{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['d', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['d', 6], 'sink': ['a', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'C_4', 'source': ['d', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[{'vulnerability': 'C_1', 'source': ['a', 6], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_2', 'source': ['a', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_3', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['c', 6]]]}][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'C_1', 'source': ['a', 6], 'sink': ['e', 7], 'unsanitized_flows': 'no', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_2', 'source': ['d', 6], 'sink': ['e', 7], 'unsanitized_flows': 'no', 'sanitized_flows': [[['c', 6]]]}, {'vulnerability': 'C_3', 'source': ['a', 7], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
+>>>>>>> c437d2b199dc75b70da8ff583b22443855d524c2
