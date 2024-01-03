@@ -1,4 +1,5 @@
 from tool_resources import Pattern, Label
+import copy
 
 class MultiLabel:
     def __init__(self, patterns: list[Pattern]):
@@ -20,6 +21,13 @@ class MultiLabel:
     def get_mapping(self):
         return self.mapping
     
+    def deep_copy(self):
+        patterns = [self.mapping[pattern].get('pattern') for pattern in self.mapping]
+        multiLabel = MultiLabel(patterns)
+        for pattern_name in multiLabel.get_mapping():
+            multiLabel.add_label(pattern_name, self.get_label(pattern_name).deep_copy())
+        return multiLabel
+
     def add_label(self, pattern_name, label):
         if self.mapping.get(pattern_name) is None: return
         self.get_entry(pattern_name)['label'] = label

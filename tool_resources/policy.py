@@ -33,7 +33,7 @@ class Policy:
             # If there are sources for that pattern
             if len(multiLabel.get_label(pattern.get_name()).get_sources()) > 0:
                 # Save the label for that pattern to a new multilabel
-                new_multilabel.add_label(pattern.get_name(), multiLabel.get_label(pattern.get_name()))
+                new_multilabel.add_label(pattern.get_name(), multiLabel.get_label(pattern.get_name()).deep_copy())
         return new_multilabel
     
     def filter_implflows(self, multilabel: MultiLabel):

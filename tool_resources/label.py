@@ -7,7 +7,7 @@ class Label:
     def __init__(self):
         self.sources = set()
         self.sanitizers = set()
-        self.sanitized_flows = set()
+        self.sanitized_flows = []
         self.unsanitized_flows = set()
     
     def get_sources(self) -> set[tuple[str, int]]:
@@ -21,15 +21,28 @@ class Label:
     def get_unsanitized_flows(self):
         return self.unsanitized_flows
     
-    def add_sanitized_flows(self, sanitizers):
-        self.sanitized_flows.append([(sanitizer[0], sanitizer[1]) for sanitizer in sanitizers])
-    
+    def prepare_sanitized_flow(self):
+        self.sanitized_flows.append([])
+    def trim_empty_sanitized_flow(self):
+        if (self.sanitized_flows[-1] == []):
+            self.sanitized_flows = self.sanitized_flows[:-1]
+
+    def noFlowHasSanitizer(self, sanitizer, flows):
+        if type(flows) is tuple:
+            return sanitizer[0] != flows[0]
+        elif type(flows) is list:
+            if len(flows) == 0: return True
+            return self.noFlowHasSanitizer(sanitizer, flows[0]) and self.noFlowHasSanitizer(sanitizer, flows[1:])
+
     def updateFlows(self, sanitizer):
         unsanitized_flows = copy.deepcopy(self.unsanitized_flows)
         for unsflow in unsanitized_flows:
             if unsflow[0] in sanitizer[2]:
                 self.unsanitized_flows.remove(unsflow)
-        self.add_sanitized_flow((sanitizer[0], sanitizer[1]))
+        if self.noFlowHasSanitizer(sanitizer, self.sanitized_flows):
+            for flow in self.sanitized_flows:
+                flow.append((sanitizer[0], sanitizer[1]))
+
         #print(f"Adding sanitized flow: {(sanitizer[0], sanitizer[1])} to label: {self}; current sanitized flows: {self.sanitized_flows}")
     
     def add_source(self, source):
@@ -41,10 +54,10 @@ class Label:
         self.updateFlows(sanitizer)
 
     def add_sanitized_flow(self, flow):
-        self.sanitized_flows.add(flow)
+        self.sanitized_flows.append(flow)
+
     def add_unsanitized_flow(self, flow):
         self.unsanitized_flows.add(flow)
-
 
     def deep_copy(self):
         label = Label()
@@ -67,8 +80,13 @@ class Label:
             combinedLabel.add_source(source)
         for sanitizer in label.get_sanitizers().union(self.get_sanitizers()):
             combinedLabel.add_sanitizer(sanitizer)
-        for flow in label.get_sanitized_flows().union(self.get_sanitized_flows()):
+        
+        for flow in copy.deepcopy(label.get_sanitized_flows()):
             combinedLabel.add_sanitized_flow(flow)
+        for flow in copy.deepcopy(self.get_sanitized_flows()):
+            if flow not in combinedLabel.get_sanitized_flows():
+                combinedLabel.add_sanitized_flow(flow)
+
         for flow in label.get_unsanitized_flows().union(self.get_unsanitized_flows()):
             combinedLabel.add_unsanitized_flow(flow)
         #print(f"Combining Labels self: {self} with label: {label} results in combinedLabel: {combinedLabel}\n")
