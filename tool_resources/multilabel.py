@@ -65,7 +65,7 @@ class MultiLabel:
                 newMultiLabel.get_label(pattern_name).add_sanitized_flow(flow)
             for flow in combinedLabel.get_unsanitized_flows():
                 newMultiLabel.get_label(pattern_name).add_unsanitized_flow(flow)
-
+        
         #print(f"Combining MultiLabels self: {self} with label: {multiLabel} results in newMultiLabel: {newMultiLabel}\n")
         return newMultiLabel
     

@@ -37,7 +37,7 @@ class Label:
     def updateFlows(self, sanitizer):
         unsanitized_flows = copy.deepcopy(self.unsanitized_flows)
         for unsflow in unsanitized_flows:
-            if unsflow[0] in sanitizer[2]:
+            if unsflow[0] in sanitizer[2] and unsflow[1] <= sanitizer[1]:
                 self.unsanitized_flows.remove(unsflow)
         if self.noFlowHasSanitizer(sanitizer, self.sanitized_flows):
             for flow in self.sanitized_flows:
@@ -50,7 +50,16 @@ class Label:
         self.unsanitized_flows.add(source)
 
     def add_sanitizer(self, sanitizer):
-        self.sanitizers.add(sanitizer)
+        #(sanitizer, lineno, (source_sanitized, ))
+        added = False
+        for san in self.sanitizers:
+            if san[0] == sanitizer[0]:
+                if sanitizer[2] not in san[2]:
+                    self.sanitizers.remove(san)
+                    self.sanitizers.add((san[0], san[1], tuple([sanitizer[2][0]] + [src for src in san[2]])))
+                    added = True
+                    break
+        if not added: self.sanitizers.add(sanitizer)
         self.updateFlows(sanitizer)
 
     def add_sanitized_flow(self, flow):
@@ -78,9 +87,10 @@ class Label:
 
         for source in label.get_sources().union(self.get_sources()): 
             combinedLabel.add_source(source)
+
         for sanitizer in label.get_sanitizers().union(self.get_sanitizers()):
             combinedLabel.add_sanitizer(sanitizer)
-        
+
         for flow in copy.deepcopy(label.get_sanitized_flows()):
             combinedLabel.add_sanitized_flow(flow)
         for flow in copy.deepcopy(self.get_sanitized_flows()):
@@ -89,6 +99,7 @@ class Label:
 
         for flow in label.get_unsanitized_flows().union(self.get_unsanitized_flows()):
             combinedLabel.add_unsanitized_flow(flow)
+
         #print(f"Combining Labels self: {self} with label: {label} results in combinedLabel: {combinedLabel}\n")
         return combinedLabel
 

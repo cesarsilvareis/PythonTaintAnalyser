@@ -62,7 +62,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                 
             if node.get("id") in unitialized_vars:
                 multilabel.force_add_source_to_all_patterns(var)
-                
+            
             return multilabel
         
         case "Attribute":
@@ -246,7 +246,6 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                 raise ValueError(f"Unsupported left type: {target_var.get('ast_type')}") # TODO: Maybe we need to add support for tuples latter: x, y = blabla<-- bonus
         
         case "If":
-        
             pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)
 
             ifmultilabelling = multilabelling.deep_copy()
@@ -259,12 +258,10 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                 for stmt in orelse:
                     elsemultilabelling = elsemultilabelling.combine(traverse_ast_stmt(stmt, policy, elsemultilabelling, vulnerabilities, pc))
     
-    
             for var_name in ifmultilabelling.get_mapping():
                 if var_name not in elsemultilabelling.get_mapping() and var_name not in multilabelling.get_mapping():
                     unitialized_vars.append(var_name)
                     
-                        
             multilabelling = multilabelling.combine(ifmultilabelling).combine(elsemultilabelling)
 
         case default:
