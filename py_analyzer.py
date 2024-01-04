@@ -87,11 +87,10 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
 
             except:
                 # ! UNITIALIZED VARIABLES ARE VULNERABLE ENTRY POINTS (SOURCES TO EVERY PATTERN) !
-                for pattern in policy.get_patterns_with_unknown_var(var):
-                    multilabel.add_source(pattern.get_name(), var)
-                if node.get("id") in unitialized_vars:
-                    multilabel.force_add_source_to_all_patterns(var)
-            
+                 multilabel.force_add_source_to_all_patterns(var)
+                 
+            if node.get("attr") in unitialized_vars:
+                multilabel.force_add_source_to_all_patterns(var)
 
             return multilabel.combine(traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities))
         
