@@ -1,0 +1,19 @@
+[
+    {
+        "vulnerability": "A",
+        "sources": [
+            "fee",
+            "fi",
+            "fo",
+            "fum"
+        ],
+        "sanitizers": [
+            "bean"
+        ],
+        "sinks": [
+            "jack",
+            "jill"
+        ],
+        "implicit": "no"
+    }
+]

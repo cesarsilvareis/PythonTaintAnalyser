@@ -1,0 +1,108 @@
+[
+{
+    "vulnerability": "A",
+    "source": [
+        "scary",
+        8
+    ],
+    "sink": [
+        "sink",
+        11
+    ],
+    "unsanitized_flows": "no",
+    "sanitized_flows": [
+        [
+            [
+                "san",
+                9
+            ]
+        ]
+    ]
+},
+{
+    "vulnerability": "A",
+    "source": [
+        "spooky",
+        8
+    ],
+    "sink": [
+        "sink",
+        11
+    ],
+    "unsanitized_flows": "no",
+    "sanitized_flows": [
+        [
+            [
+                "san",
+                9
+            ]
+        ]
+    ]
+},
+{
+    "vulnerability": "A",
+    "source": [
+        "x",
+        4
+    ],
+    "sink": [
+        "sink",
+        4
+    ],
+    "unsanitized_flows": "yes",
+    "sanitized_flows": []
+},
+{
+    "vulnerability": "B",
+    "source": [
+        "abc",
+        13
+    ],
+    "sink": [
+        "sink2",
+        13
+    ],
+    "unsanitized_flows": "yes",
+    "sanitized_flows": []
+},
+{
+    "vulnerability": "B",
+    "source": [
+        "hi",
+        13
+    ],
+    "sink": [
+        "sink2",
+        13
+    ],
+    "unsanitized_flows": "no",
+    "sanitized_flows": [
+        [
+            [
+                "san",
+                13
+            ]
+        ]
+    ]
+},
+{
+    "vulnerability": "B",
+    "source": [
+        "defg",
+        13
+    ],
+    "sink": [
+        "sink2",
+        13
+    ],
+    "unsanitized_flows": "no",
+    "sanitized_flows": [
+        [
+            [
+                "san",
+                13
+            ]
+        ]
+    ]
+}
+]

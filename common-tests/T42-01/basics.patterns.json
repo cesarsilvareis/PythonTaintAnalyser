@@ -1,0 +1,32 @@
+[
+    {
+        "vulnerability": "A",
+        "sources": [
+            "spooky",
+            "scary",
+            "skeletons"
+        ],
+        "sanitizers": [
+            "san"
+        ],
+        "sinks": [
+            "sink"
+        ],
+        "implicit": "no"
+    },
+    {
+        "vulnerability": "B",
+        "sources": [
+            "abc",
+            "defg",
+            "hi"
+        ],
+        "sanitizers": [
+            "san"
+        ],
+        "sinks": [
+            "sink2"
+        ],
+        "implicit": "no"
+    }
+]

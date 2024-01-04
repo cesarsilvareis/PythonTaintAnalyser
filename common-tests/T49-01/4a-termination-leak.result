@@ -1,0 +1,15 @@
+
+********************************************************************************
+[92m[+] All outputs of file common-tests/T49-01/4a-termination-leak.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T49-01/4a-termination-leak.output.json are well defined[0m
+
+GOOD FLOWS
+[]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A_1', 'source': ['read_input', 1], 'sink': ['sink', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
