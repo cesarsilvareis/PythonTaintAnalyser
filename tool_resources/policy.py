@@ -40,5 +40,5 @@ class Policy:
         implicit_patterns = self.get_implicit_patterns()
         pc = MultiLabel(implicit_patterns)
         for pattern in implicit_patterns:
-            pc.add_label(pattern.get_name(), multilabel.get_label(pattern.get_name()))
+            pc.add_label(pattern.get_name(), multilabel.get_label(pattern.get_name()).deep_copy())
         return pc

@@ -216,13 +216,13 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                     unitialized_vars.remove(var_name)
                 
                 var_name = target_var.get('id')
-                left_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
+                right_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
 
                 # Report illegal flows for patterns of which the left side is sink
-                illegal_flows = policy.filter_ilflows(var_name, left_multilabel)
+                illegal_flows = policy.filter_ilflows(var_name, right_multilabel)
                 vulnerabilities.record_ilflows((var_name, node.get('lineno')), illegal_flows)
 
-                multilabelling.set_multilabel(var_name, left_multilabel)
+                multilabelling.set_multilabel(var_name, right_multilabel)
                 
             elif target_var.get('ast_type') == "Attribute":
                 var_name = target_var.get('value').get('id')
