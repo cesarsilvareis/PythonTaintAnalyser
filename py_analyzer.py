@@ -31,7 +31,7 @@ unitialized_vars = []
 
 
 def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling, 
-                      vulnerabilities: Vulnerabilities, pc = None) -> MultiLabel:
+                      vulnerabilities: Vulnerabilities, pc: MultiLabel = None) -> MultiLabel:
     # Expressions are assigned the least upper bound to the variables that are read
     # In this case the least upper bound of the multilabels that compose the resulting expression multilabel
     
@@ -124,23 +124,29 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                         argmultilabel.get_label(pattern.get_name()).prepare_sanitized_flow()
                         sanitized_sources = [src[0] for src in argmultilabel.get_label(pattern.get_name()).get_sources()]
                         if len(sanitized_sources) > 0:
-                            argmultilabel.get_label(pattern.get_name()).add_sanitizer((function_name, node.get('lineno'), tuple(sanitized_sources)))
+                            argmultilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(sanitized_sources)))
                         argmultilabel.get_label(pattern.get_name()).trim_empty_sanitized_flow()
                     # Build the result multilabel of calling the function by combining the arguments
                     multilabel = multilabel.combine(argmultilabel)
                 
-                # if pc is not None:
-                #     for pattern in policy.get_implicit_patterns():
-                #         if pattern.has_sink(function_name):
-                #             multilabel.add_label(pattern.get_name(), pc.get_label(pattern.get_name()).combine(multilabel.get_label(pattern.get_name())))
-                if pc is not None:
-                    multilabel = multilabel.combine(pc)
-                    
-                print(multilabel)
-                print("\n")
+                # print(f"\n# before - function: {(function_name, node.get('lineno'))} multilabel result\n: {multilabel.get_label('B')}")
+                multilabel = multilabel.combine(pc)
+                # print(f"\n# itermediate - function: {(function_name, node.get('lineno'))} multilabel result\n: {multilabel.get_label('B')}")
+                for pattern in policy.get_patterns_with_sanitizer((function_name, node.get('lineno'))):
+                    multilabel.get_label(pattern.get_name()).prepare_sanitized_flow()
+                    sanitized_sources = [src[0] for src in multilabel.get_label(pattern.get_name()).get_sources()]
+                    if len(sanitized_sources) > 0:
+                        multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(sanitized_sources)))
+                    multilabel.get_label(pattern.get_name()).trim_empty_sanitized_flow()
+                # Build the result multilabel of calling the function by combining the arguments
+                    # Build the result multilabel of calling the function by com
+                # print(f"\n# after - function: {(function_name, node.get('lineno'))} multilabel result\n: {multilabel.get_label('B')}")
+                # if pc:
+                    # print(f" -- with pc: {pc.get_label('B')}\n")
+            
+                # print(multilabel)
+                # print("\n")
                         
-                    
-
                 # Record the possible illegal flows for calling the function with this argument (argmultilabel)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
 
@@ -277,9 +283,10 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
             multilabelling = multilabelling.combine(ifmultilabelling).combine(elsemultilabelling)
 
         case "While":
-            pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)
             while_multilabelling = multilabelling.deep_copy()
-            for _ in range(1+count_assigns(node.get('body'))):
+            for i in range(1+count_assigns(node.get('body'))):
+                pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, while_multilabelling, vulnerabilities)).combine(pc)
+                # print(f"\n\nWhile #################### iteration {i}: pc = {pc}")
                 for stmt in node.get('body'):
                     while_multilabelling = while_multilabelling.combine(traverse_ast_stmt(stmt, policy, while_multilabelling, vulnerabilities, pc))
 

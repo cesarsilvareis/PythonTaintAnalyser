@@ -49,6 +49,7 @@ class MultiLabel:
             self.get_label(pattern_name).add_sanitizer(sanitizer)
     
     def combine(self, multiLabel: 'MultiLabel'):
+        if multiLabel is None: return self.deep_copy()
         l1_patterns = set([val.get('pattern') for val in self.mapping.values()]) # Get the patterns of this MultiLabel
         l2_patterns = set([val.get('pattern') for val in multiLabel.get_mapping().values()]) # Get the patterns of the received multiLabel
         combined_patterns = list(l1_patterns.union(l2_patterns)) # Combine both patterns

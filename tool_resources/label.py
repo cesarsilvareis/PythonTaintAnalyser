@@ -29,7 +29,7 @@ class Label:
 
     def noFlowHasSanitizer(self, sanitizer, flows):
         if type(flows) is tuple:
-            return sanitizer[0] != flows[0]
+            return not (sanitizer[0] == flows[0] and sanitizer[1] == flows[1])
         elif type(flows) is list:
             if len(flows) == 0: return True
             return self.noFlowHasSanitizer(sanitizer, flows[0]) and self.noFlowHasSanitizer(sanitizer, flows[1:])
@@ -54,7 +54,7 @@ class Label:
         added = False
         for san in self.sanitizers:
             if san[0] == sanitizer[0]:
-                if sanitizer[2] not in san[2]:
+                if sanitizer[2][0] not in san[2]:
                     self.sanitizers.remove(san)
                     self.sanitizers.add((san[0], san[1], tuple([sanitizer[2][0]] + [src for src in san[2]])))
                     added = True

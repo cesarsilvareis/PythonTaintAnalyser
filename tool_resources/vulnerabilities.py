@@ -54,7 +54,7 @@ class Vulnerabilities:
         for pattern_name in illegal_flows.get_mapping():
             for source in illegal_flows.get_label(pattern_name).get_sources():
                 label = illegal_flows.get_label(pattern_name)
-                #print(f"---->>>> pattern_name: {pattern_name} | source: {source} | sink: {sink} | ilflow_label: {label}")
+                # print(f"---->>>> pattern_name: {pattern_name} | source: {source} | sink: {sink} | ilflow_label: {label}")
                 vuln = self.vulnerabilityExists(pattern_name, sink, source, label)
                 if vuln is not None: self.mapping[pattern_name].append(vuln)
                 #print(vuln)
