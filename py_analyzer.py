@@ -37,6 +37,14 @@ def get_function_name(node):
         return node.get('func').get('value')
     elif node.get('ast_type') == "Attribute":
         return node.get('attr') 
+    
+
+def update_attributes(node, policy, multilabelling, vulnerabilities, pc, multilabel):
+    if node.get('ast_type') == "Name":
+        _ = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities, pc)
+    elif node.get('ast_type') == "Attribute":
+        multilabelling.set_multilabel(node.get('attr'), multilabel)
+        update_attributes(node.get('value'), policy, multilabelling, vulnerabilities, pc, multilabel)
 
 
 def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling, 
@@ -91,7 +99,6 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                     multilabel.add_source(pattern.get_name(), var)
                 if node.get("id") in unitialized_vars:
                     multilabel.force_add_source_to_all_patterns(var)
-            
 
             return multilabel.combine(traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities))
         
@@ -150,14 +157,6 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                     if len(sanitized_sources) > 0:
                         multilabel.add_sanitizer(pattern.get_name(), (function_name, node.get('lineno'), tuple(sanitized_sources)))
                     multilabel.get_label(pattern.get_name()).trim_empty_sanitized_flow()
-                # Build the result multilabel of calling the function by combining the arguments
-                    # Build the result multilabel of calling the function by com
-                # print(f"\n# after - function: {(function_name, node.get('lineno'))} multilabel result\n: {multilabel.get_label('B')}")
-                # if pc:
-                    # print(f" -- with pc: {pc.get_label('B')}\n")
-            
-                # print(multilabel)
-                # print("\n")
                         
                 # Record the possible illegal flows for calling the function with this argument (argmultilabel)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
@@ -182,7 +181,7 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                     if node_test.get('ast_type') == "Call":
                         multilabel = multilabel.combine(traverse_ast_expr(node_test.get('func'), policy, multilabelling, vulnerabilities))
                         function_name = get_function_name(node_test.get('func').get('value'))
-                    
+
                     vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
 
                     for pattern in policy.get_patterns_with_source((taintedSource if taintedSource is not None else function_name, node.get('lineno'))):
@@ -260,12 +259,13 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                 elif target_var.get('ast_type') == "Attribute":
                     var_name = target_var.get('value').get('id')
                     attribute = target_var.get('attr')
-                    
+
                     if attribute in unitialized_vars:
                         unitialized_vars.remove(attribute)
                     
                     right_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
-                    
+                    update_attributes(target_var.get('value'), policy, multilabelling, vulnerabilities, pc, right_multilabel)
+
                     # Report illegal flows for patterns of which the left side is sink
                     illegal_flows = policy.filter_ilflows(var_name, right_multilabel)
                     vulnerabilities.record_ilflows((var_name, node.get('lineno')), illegal_flows)
