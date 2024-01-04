@@ -31,7 +31,7 @@ unitialized_vars = []
 
 
 def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling, 
-                      vulnerabilities: Vulnerabilities) -> MultiLabel:
+                      vulnerabilities: Vulnerabilities, pc = None) -> MultiLabel:
     # Expressions are assigned the least upper bound to the variables that are read
     # In this case the least upper bound of the multilabels that compose the resulting expression multilabel
     
@@ -128,6 +128,18 @@ def traverse_ast_expr(node, policy: Policy, multilabelling: MultiLabelling,
                         argmultilabel.get_label(pattern.get_name()).trim_empty_sanitized_flow()
                     # Build the result multilabel of calling the function by combining the arguments
                     multilabel = multilabel.combine(argmultilabel)
+                
+                # if pc is not None:
+                #     for pattern in policy.get_implicit_patterns():
+                #         if pattern.has_sink(function_name):
+                #             multilabel.add_label(pattern.get_name(), pc.get_label(pattern.get_name()).combine(multilabel.get_label(pattern.get_name())))
+                if pc is not None:
+                    multilabel = multilabel.combine(pc)
+                    
+                print(multilabel)
+                print("\n")
+                        
+                    
 
                 # Record the possible illegal flows for calling the function with this argument (argmultilabel)
                 vulnerabilities.record_ilflows((function_name, node.get('lineno')), policy.filter_ilflows(function_name, multilabel))
@@ -216,7 +228,7 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                     unitialized_vars.remove(var_name)
                 
                 var_name = target_var.get('id')
-                right_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities).combine(pc)
+                right_multilabel = traverse_ast_expr(node.get('value'), policy, multilabelling, vulnerabilities, pc).combine(pc)
 
                 # Report illegal flows for patterns of which the left side is sink
                 illegal_flows = policy.filter_ilflows(var_name, right_multilabel)
