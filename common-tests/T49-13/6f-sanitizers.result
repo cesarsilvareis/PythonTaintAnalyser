@@ -1,0 +1,15 @@
+
+********************************************************************************
+[92m[+] All outputs of file common-tests/T49-13/6f-sanitizers.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T49-13/6f-sanitizers.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['e', 7], 'sink': ['c', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['a', 1], 'sink': ['c', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[{'vulnerability': 'A_3', 'source': ['e', 4], 'sink': ['c', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['b1', 4], ['b2', 5], ['b2', 6]], [['b2', 5], ['b2', 6]], [['b2', 6]]]}][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A_1', 'source': ['e', 4], 'sink': ['c', 7], 'sanitized_flows': [[['b1', 4], ['b2', 5], ['b2', 6]], [['b1', 4], ['b2', 5]]], 'unsanitized_flows': 'no'}][0m

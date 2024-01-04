@@ -1,2 +1,8 @@
 
 ********************************************************************************
+[92m[+] All outputs of file common-tests/T42-02/all-purpose-conditions.myoutput.json are well defined[0m
+
+[91m[-] Incorrect Output in file common-tests/T42-02/all-purpose-conditions.output.json:
+sanitized_flows attribute is of wrong type: [[['sanitizer_1', 13]], [[['sanitizer_1', 20]]]]
+{'vulnerability': 'B', 'source': ['source_3', 9], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]], [[['sanitizer_1', 20]]]]}[0m
+

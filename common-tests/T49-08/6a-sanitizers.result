@@ -1,0 +1,15 @@
+
+********************************************************************************
+[92m[+] All outputs of file common-tests/T49-08/6a-sanitizers.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T49-08/6a-sanitizers.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['a', 3], 'sink': ['c', 6], 'unsanitized_flows': 'no', 'sanitized_flows': [[['b', 5]]]}]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[][0m

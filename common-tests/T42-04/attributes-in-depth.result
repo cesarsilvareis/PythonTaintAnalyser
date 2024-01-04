@@ -1,2 +1,15 @@
 
 ********************************************************************************
+[92m[+] All outputs of file common-tests/T42-04/attributes-in-depth.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T42-04/attributes-in-depth.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['fee', 3], 'sink': ['jack', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['fee', 3], 'sink': ['jack', 9], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['fi', 8], 'sink': ['jack', 9], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_4', 'source': ['fi', 8], 'sink': ['jack', 12], 'unsanitized_flows': 'no', 'sanitized_flows': [[['bean', 11]]]}, {'vulnerability': 'A_5', 'source': ['fo', 16], 'sink': ['jack', 16], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_6', 'source': ['fum', 16], 'sink': ['jack', 16], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_7', 'source': ['fo', 18], 'sink': ['jill', 18], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A', 'source': ['c', 14], 'sink': ['jack', 14], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A', 'source': ['fee', 3], 'sink': ['jack', 12], 'unsanitized_flows': 'no', 'sanitized_flows': [[['bean', 11]]]}][0m

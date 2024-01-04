@@ -1,0 +1,15 @@
+
+********************************************************************************
+[92m[+] All outputs of file common-tests/T49-21/5g-attributes.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T49-21/5g-attributes.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['a1', 1], 'sink': ['c', 3], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A_2', 'source': ['a2', 2], 'sink': ['c', 3], 'sanitized_flows': [], 'unsanitized_flows': 'yes'}][0m

@@ -1,2 +1,15 @@
 
 ********************************************************************************
+[92m[+] All outputs of file common-tests/T42-03/all-purpose-loops.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T42-03/all-purpose-loops.output.json are well defined[0m
+
+GOOD FLOWS
+[{'vulnerability': 'A_1', 'source': ['sourceA', 6], 'sink': ['sinkA', 9], 'unsanitized_flows': 'no', 'sanitized_flows': [[['sanitizerA', 6]]]}, {'vulnerability': 'A_2', 'source': ['sourceA', 7], 'sink': ['sinkA', 9], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['sourceB', 8], 'sink': ['sinkB', 10], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'C_1', 'source': ['sourceC', 4], 'sink': ['sinkC', 11], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[][0m

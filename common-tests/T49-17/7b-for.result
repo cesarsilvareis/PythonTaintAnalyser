@@ -1,0 +1,15 @@
+
+********************************************************************************
+[92m[+] All outputs of file common-tests/T49-17/7b-for.myoutput.json are well defined[0m
+[92m[+] All outputs of file common-tests/T49-17/7b-for.output.json are well defined[0m
+
+GOOD FLOWS
+[]
+
+[91m
+WRONG FLOWS
+[][0m
+
+[93m
+MISSING FLOWS
+[{'vulnerability': 'A_1', 'source': ['a', 3], 'sink': ['c', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
