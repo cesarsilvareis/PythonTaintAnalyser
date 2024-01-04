@@ -4,7 +4,7 @@
 [92m[+] All outputs of file common-tests/T00-14/7-conds-implicit.output.json are well defined[0m
 
 GOOD FLOWS
-[{'vulnerability': 'A_1', 'source': ['boo', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['b', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['c', 3], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+[{'vulnerability': 'A_1', 'source': ['c', 3], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['b', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['boo', 1], 'sink': ['e', 7], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
 WRONG FLOWS
