@@ -22,7 +22,12 @@ class Vulnerability:
                 "sanitized_flows": self.sanitized_flows
             }
         )
-        
+
+    def get_source(self):
+        return self.source
+    def get_sink(self):
+        return self.sink
+
     def __repr__(self) -> str:
         return str(self)
     
@@ -50,15 +55,21 @@ class Vulnerabilities:
             for source in illegal_flows.get_label(pattern_name).get_sources():
                 label = illegal_flows.get_label(pattern_name)
                 #print(f"---->>>> pattern_name: {pattern_name} | source: {source} | sink: {sink} | ilflow_label: {label}")
-                vuln = Vulnerability(
-                    f"{pattern_name}_{len(self.mapping[pattern_name])+1}",
-                    sink, source, 
-                    self.filter_sflows(source, label.get_sanitizers(), label.get_sanitized_flows()),
-                    self.filter_unsflows(source, label.get_unsanitized_flows())
-                )
+                vuln = self.vulnerabilityExists(pattern_name, sink, source, label)
+                if vuln is not None: self.mapping[pattern_name].append(vuln)
                 #print(vuln)
                 #print('\n')
-                self.mapping[pattern_name].append(vuln)
+
+    def vulnerabilityExists(self, pattern_name, sink, source, label):
+        for vulnerability in self.mapping[pattern_name]:
+            if vulnerability.get_source() == source and vulnerability.get_sink() == sink:
+                return None
+        return Vulnerability(
+            f"{pattern_name}_{len(self.mapping[pattern_name])+1}",
+            sink, source, 
+            self.filter_sflows(source, label.get_sanitizers(), label.get_sanitized_flows()),
+            self.filter_unsflows(source, label.get_unsanitized_flows())
+        )
 
     def __repr__(self) -> str:
         return str(self)

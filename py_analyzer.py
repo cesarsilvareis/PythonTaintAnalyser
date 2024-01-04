@@ -264,6 +264,19 @@ def traverse_ast_stmt(node, policy: Policy, multilabelling: MultiLabelling,
                     
             multilabelling = multilabelling.combine(ifmultilabelling).combine(elsemultilabelling)
 
+        case "While":
+            pc = policy.filter_implflows(traverse_ast_expr(node.get('test'), policy, multilabelling, vulnerabilities)).combine(pc)
+            while_multilabelling = multilabelling.deep_copy()
+            for _ in range(1+count_assigns(node.get('body'))):
+                for stmt in node.get('body'):
+                    while_multilabelling = while_multilabelling.combine(traverse_ast_stmt(stmt, policy, while_multilabelling, vulnerabilities, pc))
+
+            for var_name in while_multilabelling.get_mapping():
+                if var_name not in multilabelling.get_mapping():
+                    unitialized_vars.append(var_name)
+
+            multilabelling = multilabelling.combine(while_multilabelling)
+
         case default:
             traverse_ast_expr(node, policy, multilabelling, vulnerabilities)
     

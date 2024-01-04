@@ -4,7 +4,7 @@
 [92m[+] All outputs of file common-tests/T00-10/5b-loops-unfolding.output.json are well defined[0m
 
 GOOD FLOWS
-[]
+[{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['q', 9], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['s', 8]]]}, {'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['c', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
 WRONG FLOWS
@@ -12,4 +12,4 @@ WRONG FLOWS
 
 [93m
 MISSING FLOWS
-[{'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['c', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['q', 9], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['s', 8]]]}][0m
+[][0m
