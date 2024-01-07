@@ -1,14 +1,14 @@
 
 ********************************************************************************
-[92m[+] All outputs of file common-tests/T49-06/5d-attributes.myoutput.json are well defined[0m
+[92m[+] All outputs of file ./output/5d-attributes.output.json are well defined[0m
 [92m[+] All outputs of file common-tests/T49-06/5d-attributes.output.json are well defined[0m
 
 GOOD FLOWS
-[{'vulnerability': 'A_1', 'source': ['a', 3], 'sink': ['c', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['a', 4], 'sink': ['c', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
+[{'vulnerability': 'A_1', 'source': ['a', 3], 'sink': ['c', 5], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['a', 4], 'sink': ['c', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
 WRONG FLOWS
-[{'vulnerability': 'A_2', 'source': ['d', 4], 'sink': ['c', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
+[{'vulnerability': 'A_3', 'source': ['d', 4], 'sink': ['c', 6], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
 
 [93m
 MISSING FLOWS

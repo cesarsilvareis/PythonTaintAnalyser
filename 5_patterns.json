@@ -1,0 +1,36 @@
+[  
+    {"vulnerability": "EVAL Code Injection",
+    "sources": ["input"],
+    "sanitizers": ["json.parser", "re.search"],
+    "sinks": ["eval"],
+    "implicit": "no"
+    },
+
+    {"vulnerability": "XSS",
+    "sources": ["request.get", "request.cookies.get"],
+    "sanitizers": ["urllib.parse.quote", "cgi.escape", "html.escape"],
+    "sinks": ["string.replace", "innerHTML", "document.write"],
+    "implicit flows": "no"
+    },
+
+    {"vulnerability": "Broken Encryption Algorithms",
+    "sources": ["DES", "hashlib.sha1", "hashlib.md4", "hashlib.md5", "RC2", "rsa.PrivateKey.load_pkcs1", "rsa.PublicKey.load_pkcs1"],
+    "sanitizers": ["hashlib.sha256"],
+    "sinks": ["AES.new", "cursor.execute", "write", "print", "rsa.sign", "rsa.verify"],
+    "implicit": "no"
+    },
+
+    {"vulnerability": "Path Traversal",
+    "sources": ["input", "request.files.filename", "os.getenv", "os.getcwd"],
+    "sanitizers": ["os.path.normpath", "os.path.abspath", "werkzeug.secure_filename", "os.path.basename"],
+    "sinks": ["os.path.exists", "os.path.join", "open", "write", "read", "os.makedirs", "request.files.save", "app.config"],
+    "implicit flows": "yes"
+    },
+
+    {"vulnerability": "RCE",
+    "sources": ["pickle.dumps", "pickle.dump", "write", "subprocess.run", "os.system"],
+    "sanitizers": ["pickle.Unpickler.find_class", "yaml.safe_load"],
+    "sinks": ["pickle.load", "pickle.loads", "yaml.load", "subprocess.Popen", "os.popen"],
+    "implicit": "no"
+    }
+]

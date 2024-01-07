@@ -1,15 +1,15 @@
 
 ********************************************************************************
-[92m[+] All outputs of file common-tests/T42-02/all-purpose-conditions.myoutput.json are well defined[0m
+[92m[+] All outputs of file ./output/all-purpose-conditions.output.json are well defined[0m
 [92m[+] All outputs of file common-tests/T42-02/all-purpose-conditions.output.json are well defined[0m
 
 GOOD FLOWS
-[{'vulnerability': 'A_1', 'source': ['source_2', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['source_1', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]]]}, {'vulnerability': 'B_1', 'source': ['source_2', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_2', 'source': ['source_1', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_3', 'source': ['source_3', 9], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]], [['sanitizer_1', 20]]]}]
+[{'vulnerability': 'A_1', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]]]}, {'vulnerability': 'A_2', 'source': ['source_2', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_3', 'source': ['source_1', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_2', 'source': ['source_2', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_3', 'source': ['source_3', 9], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]], [['sanitizer_1', 20]]]}, {'vulnerability': 'B_4', 'source': ['source_1', 4], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}]
 
 [91m
 WRONG FLOWS
-[{'vulnerability': 'B_4', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m
+[{'vulnerability': 'B_1', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]], [['sanitizer_1', 20]]]}][0m
 
 [93m
 MISSING FLOWS
-[{'vulnerability': 'B', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['sanitizer_1', 13]]]}][0m
+[{'vulnerability': 'B', 'source': ['source_4', 5], 'sink': ['sink_1', 21], 'unsanitized_flows': 'yes', 'sanitized_flows': []}][0m

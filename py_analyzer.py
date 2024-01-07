@@ -9,6 +9,9 @@ import argparse
 import os
 
 debug = False
+output_folder = "./output"
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
 
 def debug_print(msg, **format_args):
     global debug
@@ -389,7 +392,10 @@ def main():
     debug_print(f"[PATTERNS]\n{patterns}\n{70*'-'}")
 
     result = analyse_code(ast_json, patterns)
-    print(result, file=sys.stdout)
+
+    output_filename = f"{output_folder}/{args.program_file.split('/')[-1].split('.')[0]}.output.json"
+    with open(output_filename, "w") as fp:
+        fp.write(f"{result}")
 
 
 if __name__ == "__main__":

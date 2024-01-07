@@ -1,10 +1,10 @@
 
 ********************************************************************************
-[92m[+] All outputs of file common-tests/T00-12/6a-sanitization.myoutput.json are well defined[0m
+[92m[+] All outputs of file ./output/6a-sanitization.output.json are well defined[0m
 [92m[+] All outputs of file common-tests/T00-12/6a-sanitization.output.json are well defined[0m
 
 GOOD FLOWS
-[{'vulnerability': 'A_1', 'source': ['f', 4], 'sink': ['z', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['b', 1], 'sink': ['z', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['d', 3], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['e', 3]]]}]
+[{'vulnerability': 'A_1', 'source': ['b', 1], 'sink': ['z', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'A_2', 'source': ['f', 4], 'sink': ['z', 4], 'unsanitized_flows': 'yes', 'sanitized_flows': []}, {'vulnerability': 'B_1', 'source': ['b', 1], 'sink': ['d', 3], 'unsanitized_flows': 'yes', 'sanitized_flows': [[['e', 3]]]}]
 
 [91m
 WRONG FLOWS
